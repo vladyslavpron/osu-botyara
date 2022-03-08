@@ -10,7 +10,6 @@ bot.command("stats", (ctx) => stats(ctx));
 bot.command("reg", (ctx) => reg(ctx));
 
 bot.on("text", (ctx) => {
-  console.log(ctx);
   ctx.reply(`Helloooo`);
 });
 
