@@ -14,6 +14,9 @@ const userSchema = new mongoose.Schema({
   countryRank: {
     type: Number,
   },
+  performancePoints: {
+    type: Number,
+  },
   playcount: {
     type: Number,
   },
@@ -23,6 +26,7 @@ const userSchema = new mongoose.Schema({
   playTime: {
     type: Number,
   },
+  grades: Object,
 });
 
 const User = mongoose.model("User", userSchema);
