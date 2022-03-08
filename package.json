@@ -1,0 +1,27 @@
+{
+  "name": "osu-botyara",
+  "version": "1.0.0",
+  "description": "osu-botyara for telegram",
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^0.26.0",
+    "dotenv": "^16.0.0",
+    "jimp": "^0.16.1",
+    "mongoose": "^6.2.4",
+    "telegraf": "^4.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vladyslavpron/osu-botyara.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vladyslavpron/osu-botyara/issues"
+  },
+  "homepage": "https://github.com/vladyslavpron/osu-botyara#readme"
+}
