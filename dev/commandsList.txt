@@ -1,2 +1,3 @@
 reg - connect account
 stats - Display player's profile stats
+last - show user's last play
