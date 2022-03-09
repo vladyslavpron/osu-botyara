@@ -1,19 +1,25 @@
 const Jimp = require("jimp");
 
 async function renderStats(user) {
+  console.log(user);
+
   let image = await Jimp.read(`${__dirname}/templateImages/stats.png`);
+
+  // print avatar 10-273 10-266
   const avatar = await Jimp.read(user.data.avatarUrl);
   avatar.resize(263, 256);
   image.blit(avatar, 10, 10);
 
-  // avatar 10-273 10-266
-
-  // 283-502 10-162 - flag
+  // print flag 283-502 10-162
   const flag = await Jimp.read(
     `${__dirname}/flags/${user.data.country.code}.png`
   );
-  flag.resize(219, 152).color([{ apply: "darken", params: [25] }]);
+  flag.resize(219, 152).color([{ apply: "darken", params: [20] }]);
+  // .blur(1);
+
   image.blit(flag, 283, 10);
+
+  if (user.data.supporter) image = await printSupporter(image);
 
   image = await printStats(user.data, image);
   await image.writeAsync("stats1.png");
@@ -24,34 +30,37 @@ async function renderStats(user) {
 module.exports = renderStats;
 
 async function printStats(data, image) {
-  const toLocale = (data) => data.toLocaleString("en-US");
-
   const font = await Jimp.loadFont(`${__dirname}/fonts/default.fnt`);
+  const nicknameFont = await Jimp.loadFont(`${__dirname}/fonts/bigForName.fnt`);
+  const countryRankFont = await Jimp.loadFont(
+    `${__dirname}/fonts/countryRank.fnt`
+  );
 
   // console.log(data);
+
   // print on flag
   image.print(
-    font,
+    nicknameFont,
     283,
-    50,
+    40,
     {
       text: `${data.nickname}`,
       alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
       alignmentY: Jimp.VERTICAL_ALIGN_CENTER,
     },
-    229,
+    219,
     20
   );
   image.print(
-    font,
+    countryRankFont,
     283,
     110,
     {
-      text: `${data.country.name} : ${data.countryRank}`,
+      text: `${data.country.name} : #${data.countryRank}`,
       alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
       alignmentY: Jimp.VERTICAL_ALIGN_CENTER,
     },
-    229,
+    219,
     20
   );
 
@@ -88,19 +97,14 @@ async function printStats(data, image) {
     );
   });
 
-  // image.print(
-  //   font,
-  //   20,
-  //   300,
-  //   {
-  //     text: `${data.grades.ssh}`,
-  //     alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-  //     alignmentY: Jimp.VERTICAL_ALIGN_TOP,
-  //   },
-  //   30,
-  //   10
-  // );
+  return image;
+}
 
+const toLocale = (data) => data.toLocaleString("en-US");
+
+async function printSupporter(image) {
+  const supporterImg = await Jimp.read(`${__dirname}/supporter.png`);
+  image.blit(supporterImg, 220, 10);
   return image;
 }
 

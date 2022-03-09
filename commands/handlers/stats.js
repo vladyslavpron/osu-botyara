@@ -34,6 +34,7 @@ async function stats(ctx) {
       grades: userNew.statistics.grade_counts,
       avatarUrl: userNew.avatar_url,
       country: userNew.country,
+      supporter: userNew.is_supporter,
     },
     difference: {},
   };
