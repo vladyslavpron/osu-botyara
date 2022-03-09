@@ -23,6 +23,7 @@ async function stats(ctx) {
   // console.log(userNew);
   const statsRenderData = {
     data: {
+      nickname: userNew.username,
       osuId: userNew.id,
       globalRank: userNew.statistics.global_rank,
       countryRank: userNew.statistics.country_rank,
