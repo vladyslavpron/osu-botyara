@@ -1,4 +1,5 @@
 const axios = require("axios");
+const getUser = require("./../../utils/getUser");
 const User = require("./../../models/userModel");
 const renderLast = require("../../renderImage/renderLast");
 
@@ -8,28 +9,38 @@ async function last(ctx) {
 
   if (ctx.message.text.indexOf(" ") === -1)
     osuId = (await User.findOne({ telegramId: userId })).osuId;
-  else osuId = await getUserIdByName(ctx.message.text.split(" ")[1]);
+  else osuId = ctx.message.text.split(" ").slice(1).join(" ");
 
-  if (!osuId) return ctx.reply("Specify or connect account");
+  if (!osuId) return ctx.reply("User not found");
+  const userProfile = await getUser(osuId);
+  osuId = userProfile?.id;
+  if (!osuId) return ctx.reply("User not found");
 
   const lastScore = await getLastScore(osuId);
-  if (!lastScore) return ctx.reply("Can't find recent plays for this user");
+  if (!lastScore.length)
+    return ctx.reply("Can't find recent plays for this user");
 
   // console.log(lastScore);
 
   const user = {
     username: lastScore[0].user.username,
     avatarUrl: lastScore[0].user.avatar_url,
+    performancePoints: userProfile.statistics.pp.toFixed(),
     countryCode: lastScore[0].user.country_code,
+    globalRank: userProfile.statistics.global_rank,
+    countryRank: userProfile.statistics.country_rank,
     supporter: lastScore[0].user.is_supporter,
   };
   const map = {
     id: lastScore[0].beatmap.id,
     status: lastScore[0].beatmap.status,
-    cs: lastScore[0].beatmap.cs,
+    cs: lastScore[0].beatmap.cs.toFixed(1),
     bpm: lastScore[0].beatmap.bpm,
     covers: lastScore[0].beatmapset.covers,
     duration: lastScore[0].beatmap.total_length,
+    od: lastScore[0].beatmap.accuracy.toFixed(1),
+    ar: lastScore[0].beatmap.ar.toFixed(1),
+    hp: lastScore[0].beatmap.drain.toFixed(1),
     objects:
       lastScore[0].beatmap.count_circles +
       lastScore[0].beatmap.count_sliders +

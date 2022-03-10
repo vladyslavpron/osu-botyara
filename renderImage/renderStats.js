@@ -1,7 +1,7 @@
 const Jimp = require("jimp");
 
 async function renderStats(user) {
-  console.log(user);
+  // console.log(user);
 
   let image = await Jimp.read(`${__dirname}/templateImages/stats.png`);
 
@@ -48,6 +48,7 @@ async function printStats(data, image) {
     219,
     20
   );
+
   image.print(
     countryRankFont,
     283,

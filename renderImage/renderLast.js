@@ -1,17 +1,46 @@
 const Jimp = require("jimp");
+const moment = require("moment");
 
 async function renderLast(user, map, play) {
   let image = await Jimp.read(`${__dirname}/templateImages/last.png`);
   const avatar = await Jimp.read(user.avatarUrl);
-  avatar.resize(190, 200);
+  avatar.resize(190, 200).fade(0.4);
   image.blit(avatar, 0, 0);
   const background = await Jimp.read(map.covers.cover);
   background.resize(578, 200).fade(0.4);
   // .color([{ apply: "darken", params: [33] }]);
   image.blit(background, 190, 0);
 
+  if (play.mods.includes("HR")) {
+    map.ar = Math.min(map.ar * 1.4, 10).toFixed(1);
+    map.od = Math.min(map.od * 1.4, 10).toFixed(1);
+    map.cs = (map.cs * 1.4).toFixed(1);
+    map.hp = (map.hp * 1.4).toFixed(1);
+  }
+  if (play.mods.includes("EZ")) {
+    map.cs = (map.cs / 2).toFixed(1);
+    map.ar = (map.ar / 2).toFixed(1);
+    map.od = (map.od / 2).toFixed(1);
+    map.hp = (map.hp / 2).toFixed(1);
+  }
+  if (play.mods.includes("DT") || play.mods.includes("NC")) {
+    map.bpm = +(map.bpm * 1.5).toFixed(1);
+    map.duration = (map.duration / 1.5).toFixed();
+    map.ar = Math.min((map.ar * 2 + 13) / 3, 11).toFixed(1);
+    map.od = Math.min((map.od * 2 + 13) / 3, 11).toFixed(1);
+  }
+  if (play.mods.includes("HT")) {
+    map.bpm = +(map.bpm * 0.75).toFixed(1);
+    map.duration = (map.duration * 1.33).toFixed();
+    map.ar = ((1800 - map.ar) / 120).toFixed(1);
+    map.od = ((1800 - map.od) / 120).toFixed(1);
+  }
+  map.maxCombo = 999;
+  map.sr = (99).toFixed(2);
+
   image = await printOnBackground(image, map);
   image = await printPlayStats(image, map, play);
+  image = await printOnAvatar(image, user);
 
   await image.writeAsync("last1.png");
   return "last1.png";
@@ -19,8 +48,70 @@ async function renderLast(user, map, play) {
 
 module.exports = renderLast;
 
+async function printOnAvatar(image, user) {
+  const font = await Jimp.loadFont(`${__dirname}/fonts/default.fnt`);
+  const nicknameFont = await Jimp.loadFont(
+    `${__dirname}/fonts/forUsernameOnScore.fnt`
+  );
+  const countryRankFont = await Jimp.loadFont(
+    `${__dirname}/fonts/countryRank.fnt`
+  );
+
+  // username
+  image.print(
+    nicknameFont,
+    0,
+    0,
+    { text: user.username, ...alignment },
+    190,
+    40
+  );
+  // pp
+  image.print(
+    countryRankFont,
+    10,
+    140,
+    { text: `${user.performancePoints}pp`, ...alignment },
+    190,
+    30
+  );
+  // global rank
+  image.print(
+    font,
+    10,
+    163,
+    { text: `Global: #${user.globalRank}`, ...alignment },
+    190,
+    30
+  );
+  // country rank
+  image.print(
+    font,
+    10,
+    180,
+    { text: `${user.countryCode}: #${user.countryRank}`, ...alignment },
+    190,
+    30
+  );
+
+  // user supporter (turned of because cant really fit)
+  // if (user.supporter) {
+  //   const supporterImg = await Jimp.read(`${__dirname}/icons/supporter.png`);
+  //   image.blit(supporterImg.resize(40, 40), 149, 0);
+  // }
+
+  return image;
+}
+
 async function printOnBackground(image, map) {
   const font = await Jimp.loadFont(`${__dirname}/fonts/lastDefault.fnt`);
+
+  // cs
+  image.print(font, 200, 175, `CS: ${map.cs}`);
+  image.print(font, 270, 175, `AR: ${map.ar}`);
+  image.print(font, 340, 175, `OD: ${map.od}`);
+  image.print(font, 410, 175, `HP: ${map.hp}`);
+  image.print(font, 480, 175, `SR: ${map.sr}`);
 
   // load icons
   const lengthIcon = await Jimp.read(
@@ -39,7 +130,7 @@ async function printOnBackground(image, map) {
   const sec = map.duration - min * 60;
   const duration = `${min}:${sec < 10 ? 0 : ""}${sec}`;
   image.print(font, 605, 170, duration);
-  image.print(font, 685, 170, `${map.bpm.toFixed(1)}bpm`);
+  image.print(font, 685, 170, `${+map.bpm.toFixed(1)}bpm`);
 
   return image;
 }
@@ -61,29 +152,53 @@ async function printPlayStats(image, map, play) {
   image.print(smallFont, 60, 335, toLocale(play.score));
 
   // combo
-  image.print(bigFont, 180, 335, `${play.combo}x/999x`);
+  image.print(mediumFont, 190, 335, `${play.combo}x/${map.maxCombo}x`);
+
+  // count of 300s
+  const font300 = await Jimp.loadFont(`${__dirname}/fonts/for300.fnt`);
+  image.print(font300, 555, 335, `${play.count300}`);
+
+  // count of 100s
+  const font100 = await Jimp.loadFont(`${__dirname}/fonts/for100.fnt`);
+  image.print(font100, 605, 335, `${play.count100}`);
+
+  // count of 50s
+  const font50 = await Jimp.loadFont(`${__dirname}/fonts/for50.fnt`);
+  image.print(font50, 655, 335, `${play.count50}`);
+
+  // count of Misses
+  const fontMiss = await Jimp.loadFont(`${__dirname}/fonts/forMiss.fnt`);
+  image.print(fontMiss, 686, 335, `${play.countMiss}`);
 
   // completion
-  const completion = (
-    map.objects /
-    (play.count50 + play.count100 + play.count300 + play.countMiss)
-  ).toFixed(2);
-  image.print(mediumFont, 75, 425, `${completion}%`);
 
+  const completion = (
+    ((play.count50 + play.count100 + play.count300 + play.countMiss) /
+      map.objects) *
+    100
+  ).toFixed(2);
+  image.print(mediumFont, 60, 425, `${completion}%`);
+
+  // played
+  image.print(mediumFont, 555, 425, moment(play.date).fromNow());
   // mods
   // console.log(play.mods);
-  for (let i = 0; i < play.mods.length; i++) {
-    const modImg = await Jimp.read(
-      `${__dirname}/icons/mods/${play.mods[i]}.png`
-    );
-    let x = 190 + 45 * i;
-    let y = 245;
-    if (i > 2) {
-      x = 190 + 45 * (i - 3);
-      y = 280;
+  if (!play.mods.length) {
+    const noModImg = await Jimp.read(`${__dirname}/icons/mods/NM.png`);
+    image.blit(noModImg, 190, 245);
+  } else
+    for (let i = 0; i < play.mods.length; i++) {
+      const modImg = await Jimp.read(
+        `${__dirname}/icons/mods/${play.mods[i]}.png`
+      );
+      let x = 190 + 45 * i;
+      let y = 245;
+      if (i > 2) {
+        x = 190 + 45 * (i - 3);
+        y = 280;
+      }
+      image.blit(modImg, x, y);
     }
-    image.blit(modImg, x, y);
-  }
 
   return image;
 }

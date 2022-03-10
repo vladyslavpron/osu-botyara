@@ -10,7 +10,7 @@ async function stats(ctx) {
     user = await User.findOne({ telegramId: userId });
     osuId = user.osuId;
   } else {
-    user = ctx.message.text.split(" ")[1];
+    user = ctx.message.text.split(" ").slice(1).join(" ");
     osuId = user;
   }
 
