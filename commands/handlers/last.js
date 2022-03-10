@@ -15,6 +15,8 @@ async function last(ctx) {
     status: lastScore[0].beatmap.status,
     cs: lastScore[0].beatmap.cs,
     bpm: lastScore[0].beatmap.bpm,
+    covers: lastScore[0].beatmapset.covers,
+    length: lastScore[0].beatmap.total_length,
   };
   const play = {
     mods: lastScore[0].mods,

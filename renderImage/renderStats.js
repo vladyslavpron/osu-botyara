@@ -12,7 +12,7 @@ async function renderStats(user) {
 
   // print flag 283-502 10-162
   const flag = await Jimp.read(
-    `${__dirname}/flags/${user.data.country.code}.png`
+    `${__dirname}/icons/flags/${user.data.country.code}.png`
   );
   flag.resize(219, 152).color([{ apply: "darken", params: [20] }]);
   // .blur(1);
@@ -103,7 +103,7 @@ async function printStats(data, image) {
 const toLocale = (data) => data.toLocaleString("en-US");
 
 async function printSupporter(image) {
-  const supporterImg = await Jimp.read(`${__dirname}/supporter.png`);
+  const supporterImg = await Jimp.read(`${__dirname}/icons/supporter.png`);
   image.blit(supporterImg, 220, 10);
   return image;
 }
