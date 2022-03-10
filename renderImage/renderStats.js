@@ -14,7 +14,8 @@ async function renderStats(user) {
   const flag = await Jimp.read(
     `${__dirname}/icons/flags/${user.data.country.code}.png`
   );
-  flag.resize(219, 152).color([{ apply: "darken", params: [20] }]);
+  flag.resize(219, 152).fade(0.4);
+  // .color([{ apply: "darken", params: [20] }]);
   // .blur(1);
 
   image.blit(flag, 283, 10);
@@ -43,11 +44,7 @@ async function printStats(data, image) {
     nicknameFont,
     283,
     40,
-    {
-      text: `${data.nickname}`,
-      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-      alignmentY: Jimp.VERTICAL_ALIGN_CENTER,
-    },
+    { text: `${data.nickname}`, ...alignment },
     219,
     20
   );
@@ -55,11 +52,7 @@ async function printStats(data, image) {
     countryRankFont,
     283,
     110,
-    {
-      text: `${data.country.name} : #${data.countryRank}`,
-      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-      alignmentY: Jimp.VERTICAL_ALIGN_CENTER,
-    },
+    { text: `${data.country.name} : #${data.countryRank}`, ...alignment },
     219,
     20
   );
@@ -83,18 +76,7 @@ async function printStats(data, image) {
   };
   Object.entries(grades).forEach((el, i) => {
     const start = 10 + 55 * i;
-    image.print(
-      font,
-      start,
-      300,
-      {
-        text: `${el[1]}`,
-        alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-        alignmentY: Jimp.VERTICAL_ALIGN_CENTER,
-      },
-      45,
-      14
-    );
+    image.print(font, start, 300, { text: `${el[1]}`, ...alignment }, 45, 14);
   });
 
   return image;
@@ -119,3 +101,8 @@ function formatPlayTime(ms) {
 
   return `${days}d ${hours}h ${minutes}m ${sec}s`;
 }
+
+const alignment = {
+  alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+  alignmentY: Jimp.VERTICAL_ALIGN_CENTER,
+};
