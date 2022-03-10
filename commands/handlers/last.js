@@ -27,7 +27,8 @@ async function last(ctx) {
   };
   console.log(user, map, play);
   const lastImage = await renderLast(user, map, play);
-  ctx.reply("/last handled!");
+
+  return ctx.replyWithPhoto({ source: `${__dirname}/../../last1.png` });
 }
 
 module.exports = last;
