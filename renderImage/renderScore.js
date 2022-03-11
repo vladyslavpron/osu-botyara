@@ -1,8 +1,8 @@
 const Jimp = require("jimp");
 const moment = require("moment");
-const calculateMapPPnSR = require("./../calculateMapPPnSR");
+const calculateMapPPnSR = require("../calculateMapPPnSR");
 
-async function renderLast(user, map, play) {
+async function renderScore(user, map, play) {
   let image = await Jimp.read(`${__dirname}/templateImages/last.png`);
   const avatar = await Jimp.read(user.avatarUrl);
   avatar.resize(190, 200).fade(0.4);
@@ -23,7 +23,7 @@ async function renderLast(user, map, play) {
   return "last1.png";
 }
 
-module.exports = renderLast;
+module.exports = renderScore;
 
 async function calculateMapStats(map, play) {
   // calc score for user play

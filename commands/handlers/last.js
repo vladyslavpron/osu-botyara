@@ -1,7 +1,7 @@
 const axios = require("axios");
 const getUser = require("./../../utils/getUser");
 const User = require("./../../models/userModel");
-const renderLast = require("../../renderImage/renderLast");
+const renderScore = require("../../renderImage/renderScore");
 
 async function last(ctx) {
   const start = Date.now();
@@ -61,11 +61,11 @@ async function last(ctx) {
 
   // console.log(user, map, play);
 
-  const lastImage = await renderLast(user, map, play);
+  const lastImage = await renderScore(user, map, play);
 
   console.log(Date.now() - start);
 
-  return ctx.replyWithPhoto({ source: `${__dirname}/../../last1.png` });
+  return ctx.replyWithPhoto({ source: `${__dirname}/../../${lastImage}` });
 }
 
 module.exports = last;
@@ -81,7 +81,7 @@ async function getLastScore(user) {
       }
     )
     .then((res) => res.data)
-    .catch((err) => console.log(err.message));
+    .catch((err) => console.log(err.response));
 }
 
 async function getUserIdByName(user) {
