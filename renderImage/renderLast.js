@@ -1,5 +1,6 @@
 const Jimp = require("jimp");
 const moment = require("moment");
+const calculateMapPPnSR = require("./../calculateMapPPnSR");
 
 async function renderLast(user, map, play) {
   let image = await Jimp.read(`${__dirname}/templateImages/last.png`);
@@ -11,6 +12,20 @@ async function renderLast(user, map, play) {
   // .color([{ apply: "darken", params: [33] }]);
   image.blit(background, 190, 0);
 
+  ({ map, play } = await calculateMapStats(map, play));
+  // console.log(map, play);
+
+  image = await printOnBackground(image, map);
+  image = await printPlayStats(image, map, play);
+  image = await printOnAvatar(image, user);
+
+  await image.writeAsync("last1.png");
+  return "last1.png";
+}
+
+module.exports = renderLast;
+
+async function calculateMapStats(map, play) {
   if (play.mods.includes("HR")) {
     map.ar = Math.min(map.ar * 1.4, 10).toFixed(1);
     map.od = Math.min(map.od * 1.4, 10).toFixed(1);
@@ -38,15 +53,16 @@ async function renderLast(user, map, play) {
   map.maxCombo = 999;
   map.sr = (99).toFixed(2);
 
-  image = await printOnBackground(image, map);
-  image = await printPlayStats(image, map, play);
-  image = await printOnAvatar(image, user);
-
-  await image.writeAsync("last1.png");
-  return "last1.png";
+  const calc = (await calculateMapPPnSR(map.id, play.mods)).toString();
+  console.log(calc.replace(/─/g, ""));
+  const songname = calc.slice(
+    calc.indexOf(` ${map.id} `) + 1,
+    calc.indexOf("\n")
+  );
+  console.log(songname);
+  // map.artist =
+  return { map, play };
 }
-
-module.exports = renderLast;
 
 async function printOnAvatar(image, user) {
   const font = await Jimp.loadFont(`${__dirname}/fonts/default.fnt`);
