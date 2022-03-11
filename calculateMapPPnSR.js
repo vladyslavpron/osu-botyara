@@ -1,36 +1,27 @@
 const { spawn, exec } = require("child_process");
+const { resolve } = require("path");
 
-async function calculateMapPPnSR(mapId, mods) {
-  // await exec(
-  //   `dotnet run -- simulate osu ${mapId}`,
-  //   { cwd: `${__dirname}/osu-tools/PerformanceCalculator` },
-  //   (err, stdout, stderr) => {
-  //     if (err) return err;
-  //     return stdout;
-  //   }
-  // );
+async function calculateMapPPnSR(mapId, mods, play) {
+  // console.log(mapId, mods, play);
 
   const command = spawn(
     `dotnet run`,
-    ["-- simulate", "osu", mapId, "--mod:dt"],
+    [
+      "-- simulate",
+      "osu",
+      mapId,
+      play?.combo ? `--combo ${play.combo}` : "",
+      play?.countMiss ? `--misses ${play.countMiss}` : "",
+      play?.count50 ? `--mehs ${play.count50}` : "",
+      play?.count100 ? `--goods ${play.count100}` : "",
+      mods.length ? `--mod:${mods.join(" --mod:")}` : "",
+      "--json",
+    ],
     {
       shell: true,
-      // stdio: "inherit",
       cwd: `${__dirname}/osu-tools/PerformanceCalculator`,
     }
   );
-
-  return await new Promise((resolve, reject) => {
-    command.stdout.on("data", (data) => {
-      // console.log(`stdout: ${data}`);
-      resolve(data);
-    });
-  });
-  // command.stdout.on("data", (data) => {
-  //   // console.log(`stdout: ${data}`);
-  //   command.close();
-  //   return data;
-  // });
 
   command.stderr.on("data", (data) => {
     console.log(`stderr: ${data}`);
@@ -41,9 +32,17 @@ async function calculateMapPPnSR(mapId, mods) {
     console.log(`error: ${error.message}`);
   });
 
-  command.on("close", (code) => {
-    console.log(`child process exited with code ${code}`);
+  return await new Promise((resolve, reject) => {
+    command.stdout.on("data", (data) => {
+      // console.log(`stdout: ${data}`);
+      if (data.indexOf(`Downloading ${mapId}.osu...`) === -1)
+        resolve(JSON.parse(data));
+    });
   });
+
+  // command.on("close", (code) => {
+  //   console.log(`child process exited with code ${code}`);
+  // });
 }
 
 module.exports = calculateMapPPnSR;

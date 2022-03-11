@@ -26,41 +26,31 @@ async function renderLast(user, map, play) {
 module.exports = renderLast;
 
 async function calculateMapStats(map, play) {
-  if (play.mods.includes("HR")) {
-    map.ar = Math.min(map.ar * 1.4, 10).toFixed(1);
-    map.od = Math.min(map.od * 1.4, 10).toFixed(1);
-    map.cs = (map.cs * 1.4).toFixed(1);
-    map.hp = (map.hp * 1.4).toFixed(1);
-  }
-  if (play.mods.includes("EZ")) {
-    map.cs = (map.cs / 2).toFixed(1);
-    map.ar = (map.ar / 2).toFixed(1);
-    map.od = (map.od / 2).toFixed(1);
-    map.hp = (map.hp / 2).toFixed(1);
-  }
-  if (play.mods.includes("DT") || play.mods.includes("NC")) {
-    map.bpm = +(map.bpm * 1.5).toFixed(1);
-    map.duration = (map.duration / 1.5).toFixed();
-    map.ar = Math.min((map.ar * 2 + 13) / 3, 11).toFixed(1);
-    map.od = Math.min((map.od * 2 + 13) / 3, 11).toFixed(1);
-  }
-  if (play.mods.includes("HT")) {
-    map.bpm = +(map.bpm * 0.75).toFixed(1);
-    map.duration = (map.duration * 1.33).toFixed();
-    map.ar = ((1800 - map.ar) / 120).toFixed(1);
-    map.od = ((1800 - map.od) / 120).toFixed(1);
-  }
-  map.maxCombo = 999;
-  map.sr = (99).toFixed(2);
+  // calc score for user play
+  const calcUserScore = await calculateMapPPnSR(map.id, play.mods, play);
+  play.pp = calcUserScore.performance_attributes.pp.toFixed();
+  // console.log(calcUserScore);
 
-  const calc = (await calculateMapPPnSR(map.id, play.mods)).toString();
-  console.log(calc.replace(/─/g, ""));
-  const songname = calc.slice(
-    calc.indexOf(` ${map.id} `) + 1,
-    calc.indexOf("\n")
-  );
-  console.log(songname);
-  // map.artist =
+  // define map stats
+  map.name = calcUserScore.score.beatmap;
+  map.sr = calcUserScore.difficulty_attributes.star_rating.toFixed(2);
+  map.maxCombo = calcUserScore.difficulty_attributes.max_combo.toFixed();
+  map.ar = calcUserScore.difficulty_attributes.approach_rate.toFixed(2);
+  map.od = calcUserScore.difficulty_attributes.overall_difficulty.toFixed(2);
+
+  // calc score if fc
+  const calcIfFc = await calculateMapPPnSR(map.id, play.mods, {
+    ...play,
+    countMiss: 0,
+    combo: 0,
+  });
+
+  play.ppIfFc = calcIfFc.performance_attributes.pp.toFixed();
+
+  // calc score for ss
+  const calcForMaxPP = await calculateMapPPnSR(map.id, play.mods);
+  map.maxPP = calcForMaxPP.performance_attributes.pp.toFixed();
+
   return { map, play };
 }
 
@@ -121,13 +111,27 @@ async function printOnAvatar(image, user) {
 
 async function printOnBackground(image, map) {
   const font = await Jimp.loadFont(`${__dirname}/fonts/lastDefault.fnt`);
+  const fontForName = await Jimp.loadFont(`${__dirname}/fonts/mediumLast.fnt`);
 
-  // cs
+  image.print(
+    fontForName,
+    200,
+    5,
+    {
+      text: map.name,
+      alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
+      alignmentY: Jimp.VERTICAL_ALIGN_TOP,
+    },
+    548,
+    50
+  );
+
+  // stats
   image.print(font, 200, 175, `CS: ${map.cs}`);
-  image.print(font, 270, 175, `AR: ${map.ar}`);
-  image.print(font, 340, 175, `OD: ${map.od}`);
-  image.print(font, 410, 175, `HP: ${map.hp}`);
-  image.print(font, 480, 175, `SR: ${map.sr}`);
+  image.print(font, 275, 175, `AR: ${map.ar}`);
+  image.print(font, 350, 175, `OD: ${map.od}`);
+  image.print(font, 425, 175, `HP: ${map.hp}`);
+  image.print(font, 500, 175, `SR: ${map.sr}`);
 
   // load icons
   const lengthIcon = await Jimp.read(
@@ -161,6 +165,15 @@ async function printPlayStats(image, map, play) {
   rank.resize(48, 24);
   image.blit(rank, 60, 250);
 
+  // pp
+  image.print(bigFont, 335, 245, `${play.pp}pp`);
+
+  // pp if fc
+  image.print(mediumFont, 335, 335, `${play.ppIfFc}pp`);
+
+  // max pp
+  image.print(mediumFont, 335, 425, `${map.maxPP}pp`);
+
   // accuracy
   image.print(bigFont, 555, 240, `${(play.accuracy * 100).toFixed(2)}%`);
 
@@ -187,7 +200,6 @@ async function printPlayStats(image, map, play) {
   image.print(fontMiss, 686, 335, `${play.countMiss}`);
 
   // completion
-
   const completion = (
     ((play.count50 + play.count100 + play.count300 + play.countMiss) /
       map.objects) *
@@ -197,6 +209,7 @@ async function printPlayStats(image, map, play) {
 
   // played
   image.print(mediumFont, 555, 425, moment(play.date).fromNow());
+
   // mods
   // console.log(play.mods);
   if (!play.mods.length) {

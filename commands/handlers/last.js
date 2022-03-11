@@ -38,8 +38,6 @@ async function last(ctx) {
     bpm: lastScore[0].beatmap.bpm,
     covers: lastScore[0].beatmapset.covers,
     duration: lastScore[0].beatmap.total_length,
-    od: lastScore[0].beatmap.accuracy.toFixed(1),
-    ar: lastScore[0].beatmap.ar.toFixed(1),
     hp: lastScore[0].beatmap.drain.toFixed(1),
     objects:
       lastScore[0].beatmap.count_circles +

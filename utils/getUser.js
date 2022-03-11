@@ -8,7 +8,7 @@ async function getUser(user) {
       },
     })
     .then((res) => res.data)
-    .catch((err) => console.log(err.res.statusMessage));
+    .catch((err) => console.log(err));
 }
 
 module.exports = getUser;
