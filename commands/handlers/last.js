@@ -4,6 +4,8 @@ const User = require("./../../models/userModel");
 const renderLast = require("../../renderImage/renderLast");
 
 async function last(ctx) {
+  const start = Date.now();
+
   let osuId;
   const userId = ctx.message.from.id;
 
@@ -58,7 +60,10 @@ async function last(ctx) {
   };
 
   // console.log(user, map, play);
+
   const lastImage = await renderLast(user, map, play);
+
+  console.log(Date.now() - start);
 
   return ctx.replyWithPhoto({ source: `${__dirname}/../../last1.png` });
 }

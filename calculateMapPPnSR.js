@@ -5,9 +5,9 @@ async function calculateMapPPnSR(mapId, mods, play) {
   // console.log(mapId, mods, play);
 
   const command = spawn(
-    `dotnet run`,
+    `PerformanceCalculator.exe`,
     [
-      "-- simulate",
+      "simulate",
       "osu",
       mapId,
       play?.combo ? `--combo ${play.combo}` : "",
@@ -19,14 +19,19 @@ async function calculateMapPPnSR(mapId, mods, play) {
     ],
     {
       shell: true,
-      cwd: `${__dirname}/osu-tools/PerformanceCalculator`,
+      cwd: `${__dirname}/osu-tools/PerformanceCalculator/bin/Release/net6.0/win10-x64`,
     }
   );
+  // console.log(command);
 
   command.stderr.on("data", (data) => {
     console.log(`stderr: ${data}`);
     return data;
   });
+
+  // command.stdout.on("data", (data) => {
+  //   console.log(`stdout: ${data}`);
+  // });
 
   command.on("error", (error) => {
     console.log(`error: ${error.message}`);

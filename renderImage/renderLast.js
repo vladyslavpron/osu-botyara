@@ -27,7 +27,28 @@ module.exports = renderLast;
 
 async function calculateMapStats(map, play) {
   // calc score for user play
-  const calcUserScore = await calculateMapPPnSR(map.id, play.mods, play);
+  const [calcUserScore, calcIfFc, calcForMaxPP] = await Promise.all([
+    calculateMapPPnSR(map.id, play.mods, play),
+    calculateMapPPnSR(map.id, play.mods, {
+      ...play,
+      countMiss: 0,
+      combo: 0,
+    }),
+    calculateMapPPnSR(map.id, play.mods),
+  ]);
+
+  // Promise.all may not work because process access same .osu file
+
+  // const calcUserScore = await calculateMapPPnSR(map.id, play.mods, play);
+  // calc score if fc
+  // const calcIfFc = await calculateMapPPnSR(map.id, play.mods, {
+  //   ...play,
+  //   countMiss: 0,
+  //   combo: 0,
+  // });
+  // calc score for ss
+  // const calcForMaxPP = await calculateMapPPnSR(map.id, play.mods);
+
   play.pp = calcUserScore.performance_attributes.pp.toFixed();
   // console.log(calcUserScore);
 
@@ -38,18 +59,11 @@ async function calculateMapStats(map, play) {
   map.ar = calcUserScore.difficulty_attributes.approach_rate.toFixed(2);
   map.od = calcUserScore.difficulty_attributes.overall_difficulty.toFixed(2);
 
-  // calc score if fc
-  const calcIfFc = await calculateMapPPnSR(map.id, play.mods, {
-    ...play,
-    countMiss: 0,
-    combo: 0,
-  });
-
   play.ppIfFc = calcIfFc.performance_attributes.pp.toFixed();
+  // play.ppIfFc = 10;
 
-  // calc score for ss
-  const calcForMaxPP = await calculateMapPPnSR(map.id, play.mods);
   map.maxPP = calcForMaxPP.performance_attributes.pp.toFixed();
+  // map.maxPP = 10;
 
   return { map, play };
 }

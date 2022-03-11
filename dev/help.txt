@@ -1,0 +1,9 @@
+
+
+
+compile ppcalc like this to work : 
+osu-tools\PerformanceCalculator>dotnet publish -c Release -r win10-x64
+
+
+
+osu-tools\PerformanceCalculator\bin\Release\netcoreapp2.0\win10-x64>PerformanceCalculator.exe
