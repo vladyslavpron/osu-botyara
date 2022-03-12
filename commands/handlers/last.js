@@ -1,7 +1,8 @@
 const axios = require("axios");
-const getUser = require("./../../utils/getUser");
 const User = require("./../../models/userModel");
 const renderScore = require("../../renderImage/renderScore");
+const getUser = require("./../../utils/getUser");
+const buildObjUserPlayMap = require("./../../utils/buildObjUserPlayMap");
 
 async function last(ctx) {
   const start = Date.now();
@@ -23,51 +24,14 @@ async function last(ctx) {
     return ctx.reply("Can't find recent plays for this user");
 
   // console.log(lastScore);
-
-  const user = {
-    username: lastScore[0].user.username,
-    avatarUrl: lastScore[0].user.avatar_url,
-    performancePoints: userProfile.statistics.pp.toFixed(),
-    countryCode: lastScore[0].user.country_code,
-    globalRank: userProfile.statistics.global_rank,
-    countryRank: userProfile.statistics.country_rank,
-    supporter: lastScore[0].user.is_supporter,
-  };
-  const map = {
-    id: lastScore[0].beatmap.id,
-    status: lastScore[0].beatmap.status,
-    url: lastScore[0].beatmap.url,
-    cs: lastScore[0].beatmap.cs.toFixed(1),
-    bpm: lastScore[0].beatmap.bpm,
-    covers: lastScore[0].beatmapset.covers,
-    duration: lastScore[0].beatmap.total_length,
-    hp: lastScore[0].beatmap.drain.toFixed(1),
-    objects:
-      lastScore[0].beatmap.count_circles +
-      lastScore[0].beatmap.count_sliders +
-      lastScore[0].beatmap.count_spinners,
-  };
-  const play = {
-    mods: lastScore[0].mods,
-    score: lastScore[0].score,
-    rank: lastScore[0].rank,
-    combo: lastScore[0].max_combo,
-    accuracy: lastScore[0].accuracy,
-    date: lastScore[0].created_at,
-    count300: lastScore[0].statistics.count_300,
-    count100: lastScore[0].statistics.count_100,
-    count50: lastScore[0].statistics.count_50,
-    countMiss: lastScore[0].statistics.count_miss,
-  };
+  const { user, play, map } = buildObjUserPlayMap(lastScore[0], userProfile);
 
   // console.log(user, map, play);
 
-  const lastImage = await renderScore(user, map, play);
-
-  console.log(Date.now() - start);
+  const scoreImage = await renderScore(user, map, play);
 
   return ctx.replyWithPhoto(
-    { source: `${__dirname}/../../${lastImage}` },
+    { source: `${__dirname}/../../${scoreImage}` },
     { caption: `Beatmap url: ${map.url}` }
   );
 }
@@ -86,15 +50,4 @@ async function getLastScore(user) {
     )
     .then((res) => res.data)
     .catch((err) => console.log(err.response));
-}
-
-async function getUserIdByName(user) {
-  return await axios
-    .get(`https://osu.ppy.sh/api/v2/users/${user}/osu`, {
-      headers: {
-        Authorization: `Bearer ${process.env.BEARER}`,
-      },
-    })
-    .then((res) => res.data.id)
-    .catch((err) => console.log(err.message));
 }

@@ -19,8 +19,8 @@ async function renderScore(user, map, play) {
   image = await printPlayStats(image, map, play);
   image = await printOnAvatar(image, user);
 
-  await image.writeAsync("last1.png");
-  return "last1.png";
+  await image.writeAsync("score1.png");
+  return "score1.png";
 }
 
 module.exports = renderScore;
