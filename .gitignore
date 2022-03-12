@@ -1,3 +1,5 @@
 *.env
 node_modules
 # osu-tools
+last1.png
+stats1.png
