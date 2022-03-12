@@ -8,7 +8,7 @@ async function getBeatmap(id) {
       },
     })
     .then((res) => res.data)
-    .catch((err) => console.log(err.response.res));
+    .catch((err) => console.log(err.response.status, err.response.statusText));
 }
 
 module.exports = getBeatmap;

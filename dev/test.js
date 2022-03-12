@@ -5,11 +5,14 @@ dotenv.config({ path: "../config.env" });
 
 (async function getUserScore(user, mapId) {
   return await axios
-    .get(`https://osu.ppy.sh/api/v2/beatmaps/lookup?id=1971099`, {
-      headers: {
-        Authorization: `Bearer ${process.env.BEARER}`,
-      },
-    })
+    .get(
+      `https://osu.ppy.sh/api/v2/beatmaps/2118443/scores/users/12703752?mods[]=NM`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.BEARER}`,
+        },
+      }
+    )
     .then((res) => console.log(res.data))
     .catch((err) => console.log(err.response));
 })();
