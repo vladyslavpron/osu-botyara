@@ -36,6 +36,7 @@ async function last(ctx) {
   const map = {
     id: lastScore[0].beatmap.id,
     status: lastScore[0].beatmap.status,
+    url: lastScore[0].beatmap.url,
     cs: lastScore[0].beatmap.cs.toFixed(1),
     bpm: lastScore[0].beatmap.bpm,
     covers: lastScore[0].beatmapset.covers,
@@ -65,7 +66,10 @@ async function last(ctx) {
 
   console.log(Date.now() - start);
 
-  return ctx.replyWithPhoto({ source: `${__dirname}/../../${lastImage}` });
+  return ctx.replyWithPhoto(
+    { source: `${__dirname}/../../${lastImage}` },
+    { caption: `Beatmap url: ${map.url}` }
+  );
 }
 
 module.exports = last;
