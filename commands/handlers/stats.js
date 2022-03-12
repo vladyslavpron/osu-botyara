@@ -40,7 +40,10 @@ async function stats(ctx) {
   };
   const statsImage = await renderStats(statsRenderData);
 
-  return ctx.replyWithPhoto({ source: `${__dirname}/../../stats1.png` });
+  return ctx.replyWithPhoto(
+    { source: `${__dirname}/../../stats1.png` },
+    { caption: `Profile url: https://osu.ppy.sh/users/${osuId}/osu` }
+  );
 }
 
 module.exports = stats;
