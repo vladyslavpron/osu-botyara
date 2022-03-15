@@ -1,6 +1,8 @@
 # osu-botyara
 
-install node.js and dotnet(6.0 tested)
+osu! bot for telegram @osu_botyara_bot
+
+install node.js and dotnet(6.0 works for sure)
 then from cmd:
 
 git clone https://github.com/vladyslavpron/osu-botyara.git  
