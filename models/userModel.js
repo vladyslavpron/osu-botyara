@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema({
   telegramId: {
     type: Number,
     required: [true, "User must have telegram id"],
+    unique: true,
   },
   osuId: {
     type: Number,

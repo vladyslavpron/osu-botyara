@@ -1,5 +1,7 @@
 reg - connect account
-stats - Display player's profile stats
+stats - show player's profile stats
 last - show user's last play
 c - show user's play on map
 score - show user's play on map
+top - show user's top 5 plays
+conf - show all scores of chat on beatmap

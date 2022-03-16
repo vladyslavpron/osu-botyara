@@ -43,9 +43,8 @@ async function score(ctx) {
   if (!osuId) return ctx.reply("User not found");
 
   // console.log(mapId);
-  const modsStr = mods && `?mods[]=${mods.join("&mods[]=")}`;
   // console.log(modsStr);
-  const score = await getUserScore(osuId, mapId, modsStr);
+  const score = await getUserScore(osuId, mapId, mods);
   if (!score)
     return ctx.reply(
       `Can't find user's ${

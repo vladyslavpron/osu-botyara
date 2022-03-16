@@ -1,6 +1,8 @@
 const axios = require("axios");
 
-async function getUserScore(user, mapId, modsStr) {
+async function getUserScore(user, mapId, mods) {
+  const modsStr = mods && `?mods[]=${mods.join("&mods[]=")}`;
+
   return await axios
     .get(
       `https://osu.ppy.sh/api/v2/beatmaps/${mapId}/scores/users/${user}${modsStr}`,
