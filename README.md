@@ -1,5 +1,7 @@
 # osu-botyara
 
+TODO: best score of day, /conf, map info after receiving map link
+
 osu! bot for telegram @osu_botyara_bot
 
 install node.js and dotnet(6.0 works for sure)
