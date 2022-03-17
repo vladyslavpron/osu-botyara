@@ -1,4 +1,7 @@
 const axios = require("axios");
+const Chat = require("../../models/chatModel");
+const renderConf = require("../../renderImage/renderConf");
+const getBeatmap = require("../../utils/getBeatmap");
 const User = require("./../../models/userModel");
 const getUser = require("./../../utils/getUser");
 const getUserScore = require("./../../utils/getUserScore");
@@ -25,16 +28,40 @@ async function conf(ctx) {
         .toUpperCase()
         .match(/.{1,2}/g) || [];
 
-  //   console.log(ctx, ctx.update.message.chat);
+  console.log(ctx.update.message.chat.id);
 
-  //   const users = await User.find({});
-  //   console.log(users);
-  //   const scores = users.map((user) => getUserScore(user.osuId, mapId, mods));
-  //   await Promise.allSettled(scores);
+  const users = (
+    await Chat.find({
+      chatId: ctx.update.message.chat.id,
+    }).populate("users", {
+      telegramId: 1,
+      osuId: 1,
+    })
+  )[0].users;
 
-  //   console.log(scores);
+  console.log(users);
 
-  ctx.reply("/conf handled");
+  const scoresRequests = users.map((user) =>
+    getUserScore(user.osuId, mapId, mods)
+  );
+  const scores = (await Promise.allSettled(scoresRequests)).map((el) => {
+    el.value.score.position = el.value.position;
+    return el.value.score;
+  });
+  if (!scores.length) return ctx.reply("No scores found for this beatmap");
+
+  const beatmap = await getBeatmap(scores[0].beatmap.id);
+  // console.log(beatmap);
+
+  // console.log(scores);
+
+  const confImg = await renderConf(beatmap, scores);
+
+  // ctx.reply("/conf handled");
+  return ctx.replyWithPhoto(
+    { source: `${__dirname}/../../${confImg}` }
+    // { caption: `Beatmap url: ${map.url}` }
+  );
 }
 
 module.exports = conf;
