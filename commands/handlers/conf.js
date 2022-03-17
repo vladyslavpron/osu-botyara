@@ -55,6 +55,7 @@ async function conf(ctx) {
     // console.log(el);
     if (!el.value) return false;
     el.value.score.position = el.value.position;
+
     return el.value.score;
   });
 

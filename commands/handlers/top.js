@@ -14,8 +14,7 @@ async function top(ctx) {
   const username = command.join(" ");
   if (username) osuId = username;
   else osuId = (await User.findOne({ telegramId: userId })).osuId;
-  console.log(osuId, username, mods);
-  console.log(username ? true : false);
+  // console.log(osuId, username, mods);
   ctx.reply("your top scores");
 }
 
