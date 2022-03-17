@@ -41,9 +41,9 @@ async function conf(ctx) {
 
   // console.log(users);
 
-  const scoresRequests = users.map((user) =>
-    getUserScore(user.osuId, mapId, mods)
-  );
+  const scoresRequests = users
+    .filter((user) => user.osuId)
+    .map((user) => getUserScore(user.osuId, mapId, mods));
   const scoresResponses = (await Promise.allSettled(scoresRequests)).filter(
     (el) => el.value
   );

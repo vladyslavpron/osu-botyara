@@ -15,13 +15,13 @@ async function reg(ctx) {
     { telegramId: userId },
     {
       osuId: user.id,
-      globalRank: user.statistics.global_rank,
-      countryRank: user.statistics.country_rank,
-      performancePoints: user.statistics.pp.toFixed(),
-      playCount: user.statistics.play_count,
-      accuracy: user.statistics.hit_accuracy.toFixed(2),
-      playTime: user.statistics.play_time,
-      grades: user.statistics.grade_counts,
+      // globalRank: user.statistics.global_rank,
+      // countryRank: user.statistics.country_rank,
+      // performancePoints: user.statistics.pp.toFixed(),
+      // playCount: user.statistics.play_count,
+      // accuracy: user.statistics.hit_accuracy.toFixed(2),
+      // playTime: user.statistics.play_time,
+      // grades: user.statistics.grade_counts,
     },
     { upsert: true }
   );
