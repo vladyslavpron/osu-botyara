@@ -39,28 +39,38 @@ async function conf(ctx) {
     })
   )[0].users;
 
-  console.log(users);
+  // console.log(users);
 
   const scoresRequests = users.map((user) =>
     getUserScore(user.osuId, mapId, mods)
   );
-  const scores = (await Promise.allSettled(scoresRequests)).map((el) => {
+  const scoresResponses = (await Promise.allSettled(scoresRequests)).filter(
+    (el) => el.value
+  );
+
+  if (!scoresResponses.length)
+    return ctx.reply("No scores found for this beatmap");
+  // console.log(scoresResponses);
+  const scores = scoresResponses.map((el) => {
+    // console.log(el);
+    if (!el.value) return false;
     el.value.score.position = el.value.position;
     return el.value.score;
   });
-  if (!scores.length) return ctx.reply("No scores found for this beatmap");
+
+  // console.log(scores);
+
+  if (scores.length > 1) scores.sort((a, b) => b.score - a.score);
 
   const beatmap = await getBeatmap(scores[0].beatmap.id);
   // console.log(beatmap);
-
-  // console.log(scores);
 
   const confImg = await renderConf(beatmap, scores);
 
   // ctx.reply("/conf handled");
   return ctx.replyWithPhoto(
-    { source: `${__dirname}/../../${confImg}` }
-    // { caption: `Beatmap url: ${map.url}` }
+    { source: `${__dirname}/../../${confImg}` },
+    { caption: `Beatmap url: ${beatmap.url}` }
   );
 }
 
