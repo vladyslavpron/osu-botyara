@@ -15,7 +15,7 @@ async function top(ctx) {
   if (username) osuId = username;
   else osuId = (await User.findOne({ telegramId: userId })).osuId;
   // console.log(osuId, username, mods);
-  ctx.reply("your top scores");
+  ctx.reply("not implemented yet");
 }
 
 module.exports = top;
