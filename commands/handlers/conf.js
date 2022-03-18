@@ -28,7 +28,7 @@ async function conf(ctx) {
         .toUpperCase()
         .match(/.{1,2}/g) || [];
 
-  console.log(ctx.update.message.chat.id);
+  // console.log(ctx.update.message.chat.id);
 
   const users = (
     await Chat.find({

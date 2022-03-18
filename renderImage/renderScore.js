@@ -26,16 +26,32 @@ async function renderScore(user, map, play) {
 module.exports = renderScore;
 
 async function calculateMapStats(map, play) {
+  // console.log(play);
   // calc score for user play
-  const [calcUserScore, calcIfFc, calcForMaxPP] = await Promise.all([
-    calculateMapPPnSR(map.id, play.mods, play),
+  const promisesArray = [
     calculateMapPPnSR(map.id, play.mods, {
       ...play,
       countMiss: 0,
       combo: 0,
     }),
     calculateMapPPnSR(map.id, play.mods),
-  ]);
+  ];
+
+  if (!play.pp) promisesArray.push(calculateMapPPnSR(map.id, play.mods, play));
+
+  // const promisesArray = [
+  //   calculateMapPPnSR(map.id, play.mods, {
+  //     ...play,
+  //     countMiss: 0,
+  //     combo: 0,
+  //   }),
+  //   calculateMapPPnSR(map.id, play.mods),
+  //   calculateMapPPnSR(map.id, play.mods, play),
+  // ];
+
+  const [calcIfFc, calcForMaxPP, calcUserScore] = await Promise.all(
+    promisesArray
+  );
 
   // Promise.all may not work because process access same .osu file
 
@@ -48,16 +64,15 @@ async function calculateMapStats(map, play) {
   // });
   // calc score for ss
   // const calcForMaxPP = await calculateMapPPnSR(map.id, play.mods);
-
-  play.pp = calcUserScore.performance_attributes.pp.toFixed();
+  if (!play.pp) play.pp = calcUserScore.performance_attributes.pp.toFixed();
   // console.log(calcUserScore);
 
   // define map stats
-  map.name = calcUserScore.score.beatmap;
-  map.sr = calcUserScore.difficulty_attributes.star_rating.toFixed(2);
-  map.maxCombo = calcUserScore.difficulty_attributes.max_combo.toFixed();
-  map.ar = calcUserScore.difficulty_attributes.approach_rate.toFixed(2);
-  map.od = calcUserScore.difficulty_attributes.overall_difficulty.toFixed(2);
+  map.name = calcIfFc.score.beatmap;
+  map.sr = calcIfFc.difficulty_attributes.star_rating.toFixed(2);
+  map.maxCombo = calcIfFc.difficulty_attributes.max_combo.toFixed();
+  map.ar = calcIfFc.difficulty_attributes.approach_rate.toFixed(2);
+  map.od = calcIfFc.difficulty_attributes.overall_difficulty.toFixed(2);
 
   play.ppIfFc = calcIfFc.performance_attributes.pp.toFixed();
   // play.ppIfFc = 10;

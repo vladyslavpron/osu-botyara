@@ -8,6 +8,7 @@ const score = require("./handlers/score");
 const top = require("./handlers/top");
 const conf = require("./handlers/conf");
 const unreg = require("./handlers/unreg");
+const bestrecent = require("./handlers/bestrecent");
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
@@ -34,13 +35,15 @@ bot.command("reg", (ctx) => reg(ctx));
 bot.command("unreg", (ctx) => unreg(ctx));
 bot.command("stats", (ctx) => stats(ctx));
 bot.command("last", (ctx) => last(ctx));
+bot.command("recent", (ctx) => last(ctx));
 bot.command("c", (ctx) => score(ctx));
 bot.command("score", (ctx) => score(ctx));
 bot.command("top", (ctx) => top(ctx));
 bot.command("conf", (ctx) => conf(ctx));
+bot.command("bestrecent", (ctx) => bestrecent(ctx));
 
-bot.on("text", (ctx) => {
-  ctx.reply(`Helloooo`);
-});
+// bot.on("text", (ctx) => {
+//   ctx.reply(`Helloooo`);
+// });
 
 bot.launch();
