@@ -14,7 +14,7 @@ top - show user's top 5 plays
 conf - show all scores of chat on beatmap  
 bestrecent - show best recent play (in last 24h)  
 
-# palns  
+# plans  
 map info after map link sent in chat   
 /top   
 :heavy_check_mark: /conf  
