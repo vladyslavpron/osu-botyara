@@ -25,7 +25,7 @@ async function renderStats(user) {
   image = await printStats(user.data, image);
   await image.writeAsync("stats1.png");
 
-  return "stats1.png";
+  return image;
 }
 
 module.exports = renderStats;

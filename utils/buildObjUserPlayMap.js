@@ -24,7 +24,7 @@ function buildObjUserPlayMap(score, userProfile) {
   };
   const play = {
     mods: score.mods,
-    pp: score.pp.toFixed(),
+    pp: score.pp ? score.pp.toFixed() : null,
     score: score.score,
     rank: score.rank,
     combo: score.max_combo,
