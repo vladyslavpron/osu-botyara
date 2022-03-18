@@ -15,10 +15,10 @@ conf - show all scores of chat on beatmap
 bestrecent - show best recent play (in last 24h)  
 
 # palns  
-map info after map link sent in chat  
-/top  
-:heavy_check_mark: /conf 
-:heavy_check_mark: best score of day 
+map info after map link sent in chat   
+/top   
+:heavy_check_mark: /conf  
+:heavy_check_mark: best score of day  
 
 # how to run
 install node.js and dotnet(6.0 works for sure)
