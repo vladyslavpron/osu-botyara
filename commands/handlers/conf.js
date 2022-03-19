@@ -7,9 +7,9 @@ const getUser = require("./../../utils/getUser");
 const getUserScore = require("./../../utils/getUserScore");
 
 async function conf(ctx) {
-  // TODO: must show scores only for this conversation
-
-  // const mapId=
+  console.log(
+    `user ${ctx.message.from.id} from chat ${ctx.message.chat.id} asking /conf`
+  );
 
   let mods;
   const userId = ctx.message.from.id;

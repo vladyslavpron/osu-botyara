@@ -3,9 +3,12 @@ const axios = require("axios");
 const User = require("./../../models/userModel");
 const getUser = require("./../../utils/getUser");
 const getBeatmap = require("../../utils/getBeatmap");
-const { off } = require("./../../models/userModel");
 
 async function top(ctx) {
+  console.log(
+    `user ${ctx.message.from.id} from chat ${ctx.message.chat.id} asking /top`
+  );
+
   let mods, osuId, offset;
   const userId = ctx.update.message.from.id;
   const command = ctx.update.message.text.split(" ").slice(1);

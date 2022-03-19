@@ -3,6 +3,10 @@ const getUser = require("./../../utils/getUser");
 const renderStats = require("../../renderImage/renderStats");
 
 async function stats(ctx) {
+  console.log(
+    `user ${ctx.message.from.id} from chat ${ctx.message.chat.id} asking /stats`
+  );
+
   let user, osuId;
   const userId = ctx.message.from.id;
 
