@@ -2,6 +2,7 @@ const renderTop = require("../../renderImage/renderTop");
 const axios = require("axios");
 const User = require("./../../models/userModel");
 const getUser = require("./../../utils/getUser");
+const getBeatmap = require("../../utils/getBeatmap");
 
 async function top(ctx) {
   let mods, osuId, offset;
@@ -31,26 +32,24 @@ async function top(ctx) {
   if (!user) return ctx.reply("User not found");
   osuId = user.id;
 
-  const scores = await getTopScores(osuId);
+  const scores = (
+    await Promise.allSettled(
+      (
+        await getTopScores(osuId)
+      ).map(async (score) => {
+        if (score.perfect) {
+          score.beatmap.max_combo = score.max_combo;
+        } else {
+          score.beatmap.max_combo = (
+            await getBeatmap(score.beatmap.id)
+          ).max_combo;
+        }
+        return score;
+      })
+    )
+  ).map((el) => el.value);
 
-  const statsRenderData = {
-    data: {
-      nickname: user.username,
-      osuId: user.id,
-      globalRank: user.statistics.global_rank,
-      countryRank: user.statistics.country_rank,
-      performancePoints: user.statistics.pp.toFixed(),
-      playCount: user.statistics.play_count,
-      accuracy: user.statistics.hit_accuracy.toFixed(2),
-      playTime: user.statistics.play_time,
-      grades: user.statistics.grade_counts,
-      avatarUrl: user.avatar_url,
-      country: user.country,
-      supporter: user.is_supporter,
-    },
-  };
-
-  const topImage = await renderTop(statsRenderData, scores);
+  const topImage = await renderTop(user, scores);
 
   // console.log(osuId, username, mods);
   // ctx.reply("not implemented yet");

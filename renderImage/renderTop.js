@@ -2,8 +2,14 @@ const Jimp = require("jimp");
 const renderStats = require("./renderStats");
 const moment = require("moment");
 
-async function renderTop(statsRenderData, scores) {
+async function renderTop(user, scores) {
   console.log(scores);
+  // console.log(user);
+  const usernameFont = await Jimp.loadFont(
+    `${__dirname}/fonts/top/username.fnt`
+  );
+  const rankFont = await Jimp.loadFont(`${__dirname}/fonts/top/rank.fnt`);
+
   const nameFont = await Jimp.loadFont(`${__dirname}/fonts/top/forName.fnt`);
   const ppFont = await Jimp.loadFont(`${__dirname}/fonts/top/forPP.fnt`);
   const mediumFont = await Jimp.loadFont(`${__dirname}/fonts/top/medium.fnt`);
@@ -12,17 +18,53 @@ async function renderTop(statsRenderData, scores) {
   const for50 = await Jimp.loadFont(`${__dirname}/fonts/top/for50.fnt`);
   const forMiss = await Jimp.loadFont(`${__dirname}/fonts/top/forMiss.fnt`);
 
-  //   console.log(scores[0].beatmapset.covers);
-  const image = new Jimp(1024, 0 + 30 + scores.length * 155, "#000000");
+  // TODO: global/contry/performance bigger font
+  // TODO: PP bigger font, maybe other color
+  // TODO: Better padding between scores border instead
+  // TODO: Maybe change date position between pp and mods or just higher
 
-  //   const statsImage = await renderStats(statsRenderData);
-  //   statsImage.resize(382, 250);
-  //   image.blit(statsImage, 65, 0);
-  //   const banner = await Jimp.read(`${__dirname}/templateImages/topBanner.png`);
-  //   image.blit(banner, 0, 240);
+  const image = new Jimp(1024, 240 + 30 + scores.length * 155, "#000000");
+
+  // avatar
+  const avatar = await Jimp.read(user.avatar_url);
+  avatar.resize(200, 200);
+  image.blit(avatar, 50, 0);
+
+  // username
+  image.print(usernameFont, 260, 77, `${user.username}`);
+  // global rank
+  image.print(rankFont, 582, 55, `Global: #${user.statistics.global_rank}`);
+  // country rank
+  image.print(
+    rankFont,
+    582,
+    85,
+    `${user.country_code}: #${user.statistics.country_rank}`
+  );
+  // pp
+  image.print(
+    rankFont,
+    582,
+    115,
+    `Performance: ${user.statistics.pp.toFixed()}pp`
+  );
+
+  // banner
+  const banner = await Jimp.read(`${__dirname}/templateImages/topBanner.png`);
+  image.blit(banner, 0, 200);
+
+  // smth like top 5 scores
+  image.print(
+    rankFont,
+    0,
+    210,
+    { text: `BEST ${scores.length} PERFORMANCE: `, ...alignment },
+    1024,
+    40
+  );
 
   const cardsPromises = scores.map((score, i) =>
-    printScore(5, 150 * i + 5 * (i + 1), score)
+    printScore(5, 240 + 150 * i + 5 * (i + 1), score)
   );
   await Promise.all(cardsPromises);
 
@@ -123,14 +165,23 @@ async function renderTop(statsRenderData, scores) {
       `${__dirname}/icons/rankIcons/${score.rank}.png`
     );
     rankImg.resize(64, 32);
-    image.blit(rankImg, x + 160 + 512, y + 5);
+    image.blit(rankImg, x + 160 + 512 + 15, y + 5);
+
+    image.print(
+      mediumFont,
+      x + 670,
+      y + 5,
+      { text: `${score.max_combo}x/${score.beatmap.max_combo}x`, ...alignment },
+      100,
+      30
+    );
 
     // date
     image.print(
       mediumFont,
       x + 1024 - 165,
       y + 105,
-      `${moment(score.created_at).fromNow()}`
+      `${moment(score.created_at).format("DD/MM/YYYY")}`
     );
   }
 }
