@@ -2,7 +2,7 @@ const Jimp = require("jimp");
 const renderStats = require("./renderStats");
 const moment = require("moment");
 
-async function renderTop(user, scores, mods) {
+async function renderTop(user, scores, mods, offset) {
   // console.log(scores);
   // console.log(user);
   const usernameFont = await Jimp.loadFont(
@@ -56,7 +56,9 @@ async function renderTop(user, scores, mods) {
     0,
     210,
     {
-      text: `BEST ${scores.length}${mods ? ` +${mods}` : ""} PERFORMANCE: `,
+      text: `${offset ? "#" : "BEST"} ${offset ? offset : scores.length}${
+        mods ? ` +${mods}` : ""
+      } PERFORMANCE: `,
       ...alignment,
     },
     1024,

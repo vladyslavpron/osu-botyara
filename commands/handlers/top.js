@@ -3,6 +3,7 @@ const axios = require("axios");
 const User = require("./../../models/userModel");
 const getUser = require("./../../utils/getUser");
 const getBeatmap = require("../../utils/getBeatmap");
+const { off } = require("./../../models/userModel");
 
 async function top(ctx) {
   let mods, osuId, offset;
@@ -41,15 +42,23 @@ async function top(ctx) {
   if (!user) return ctx.reply("User not found");
   osuId = user.id;
 
-  let topScores = await getTopScores(osuId, mods ? 100 : 5);
+  // console.log(offset);
+
+  let topScores = await getTopScores(
+    osuId,
+    mods ? 0 : offset ? offset : 0,
+    mods ? 100 : offset ? 1 : 5
+  );
+  // console.log(topScores.length);
 
   if (mods) {
     let count = 0;
+    let max = offset || 5;
     topScores = topScores.filter((score) => {
       // console.log(score.mods.sort().join(""), score.mods.length, count);
       if (!score.mods.length) score.mods.push("NM");
       if (
-        count < 5 &&
+        count < max &&
         score.mods.length * 2 === mods.length &&
         score.mods.sort().join("") === mods
       ) {
@@ -60,8 +69,17 @@ async function top(ctx) {
     });
   }
 
-  if (!topScores.length)
-    return ctx.reply(`Can't find${mods ? ` +${mods}` : ""} top scores`);
+  // console.log(topScores.length);
+
+  if (!topScores || !topScores.length || topScores.length < offset)
+    return ctx.reply(
+      `Can't find${mods ? ` +${mods}` : ""} best${
+        offset ? ` ${offset}` : ""
+      } score${offset ? "" : "s"}`
+    );
+
+  if (offset) topScores = [topScores[offset - 1]];
+  else topScores = topScores.slice(0, 5);
 
   // console.log(topScores.length);
   // console.log(topScores);
@@ -81,7 +99,7 @@ async function top(ctx) {
     )
   ).map((el) => el.value);
 
-  const topImage = await renderTop(user, scores, mods);
+  const topImage = await renderTop(user, scores, mods, offset);
 
   // console.log(osuId, username, mods);
   // ctx.reply("not implemented yet");
@@ -93,10 +111,10 @@ async function top(ctx) {
 
 module.exports = top;
 
-async function getTopScores(user, limit = 5) {
+async function getTopScores(user, offset = 0, limit = 5) {
   return await axios
     .get(
-      `https://osu.ppy.sh/api/v2/users/${user}/scores/best?mode=osu&limit=${limit}`,
+      `https://osu.ppy.sh/api/v2/users/${user}/scores/best?mode=osu&offset=${offset}&limit=${limit}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.BEARER}`,
