@@ -15,9 +15,18 @@ async function top(ctx) {
   }
 
   if (command.length && command[command.length - 1].indexOf("+") !== -1) {
-    mods = command[command.length - 1].slice(1);
+    mods = (
+      command[command.length - 1]
+        .slice(1)
+        .toUpperCase()
+        .match(/.{1,2}/g) || []
+    )
+      .sort()
+      .join("");
     command.pop();
   }
+
+  // console.log(mods, mods.length);
 
   const username = command.join(" ");
   // TODO: RENDER TOP 5 SCORES
@@ -32,11 +41,34 @@ async function top(ctx) {
   if (!user) return ctx.reply("User not found");
   osuId = user.id;
 
+  let topScores = await getTopScores(osuId, mods ? 100 : 5);
+
+  if (mods) {
+    let count = 0;
+    topScores = topScores.filter((score) => {
+      // console.log(score.mods.sort().join(""), score.mods.length, count);
+      if (!score.mods.length) score.mods.push("NM");
+      if (
+        count < 5 &&
+        score.mods.length * 2 === mods.length &&
+        score.mods.sort().join("") === mods
+      ) {
+        count++;
+        return true;
+      }
+      return false;
+    });
+  }
+
+  if (!topScores.length)
+    return ctx.reply(`Can't find${mods ? ` +${mods}` : ""} top scores`);
+
+  // console.log(topScores.length);
+  // console.log(topScores);
+
   const scores = (
     await Promise.allSettled(
-      (
-        await getTopScores(osuId)
-      ).map(async (score) => {
+      topScores.map(async (score) => {
         if (score.perfect) {
           score.beatmap.max_combo = score.max_combo;
         } else {
@@ -49,7 +81,7 @@ async function top(ctx) {
     )
   ).map((el) => el.value);
 
-  const topImage = await renderTop(user, scores);
+  const topImage = await renderTop(user, scores, mods);
 
   // console.log(osuId, username, mods);
   // ctx.reply("not implemented yet");
@@ -61,10 +93,10 @@ async function top(ctx) {
 
 module.exports = top;
 
-async function getTopScores(user) {
+async function getTopScores(user, limit = 5) {
   return await axios
     .get(
-      `https://osu.ppy.sh/api/v2/users/${user}/scores/best?mode=osu&limit=5`,
+      `https://osu.ppy.sh/api/v2/users/${user}/scores/best?mode=osu&limit=${limit}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.BEARER}`,
