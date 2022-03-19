@@ -15,8 +15,9 @@ conf - show all scores of chat on beatmap
 bestrecent - show best recent play (in last 24h)  
 
 # plans  
-map info after map link sent in chat   
-/top   
+map info after map link sent in chat  
+improve /conf (fonts, style etc.)
+:heavy_check_mark: /top   
 :heavy_check_mark: /conf  
 :heavy_check_mark: best score of day  
 
