@@ -3,12 +3,14 @@ const renderStats = require("./renderStats");
 const moment = require("moment");
 
 async function renderTop(user, scores) {
-  console.log(scores);
+  // console.log(scores);
   // console.log(user);
   const usernameFont = await Jimp.loadFont(
     `${__dirname}/fonts/top/username.fnt`
   );
   const rankFont = await Jimp.loadFont(`${__dirname}/fonts/top/rank.fnt`);
+
+  const bannerFont = await Jimp.loadFont(`${__dirname}/fonts/top/banner.fnt`);
 
   const nameFont = await Jimp.loadFont(`${__dirname}/fonts/top/forName.fnt`);
   const ppFont = await Jimp.loadFont(`${__dirname}/fonts/top/forPP.fnt`);
@@ -18,12 +20,7 @@ async function renderTop(user, scores) {
   const for50 = await Jimp.loadFont(`${__dirname}/fonts/top/for50.fnt`);
   const forMiss = await Jimp.loadFont(`${__dirname}/fonts/top/forMiss.fnt`);
 
-  // TODO: global/contry/performance bigger font
-  // TODO: PP bigger font, maybe other color
-  // TODO: Better padding between scores border instead
-  // TODO: Maybe change date position between pp and mods or just higher
-
-  const image = new Jimp(1024, 240 + 30 + scores.length * 155, "#000000");
+  const image = new Jimp(1024, 240 + 40 + scores.length * 155 - 35, "#000000");
 
   // avatar
   const avatar = await Jimp.read(user.avatar_url);
@@ -33,7 +30,7 @@ async function renderTop(user, scores) {
   // username
   image.print(usernameFont, 260, 77, `${user.username}`);
   // global rank
-  image.print(rankFont, 582, 55, `Global: #${user.statistics.global_rank}`);
+  image.print(rankFont, 582, 50, `Global: #${user.statistics.global_rank}`);
   // country rank
   image.print(
     rankFont,
@@ -45,7 +42,7 @@ async function renderTop(user, scores) {
   image.print(
     rankFont,
     582,
-    115,
+    120,
     `Performance: ${user.statistics.pp.toFixed()}pp`
   );
 
@@ -55,13 +52,15 @@ async function renderTop(user, scores) {
 
   // smth like top 5 scores
   image.print(
-    rankFont,
+    bannerFont,
     0,
     210,
     { text: `BEST ${scores.length} PERFORMANCE: `, ...alignment },
     1024,
     40
   );
+
+  const cardBorder = new Jimp(1024, 5, "#2f2f2f");
 
   const cardsPromises = scores.map((score, i) =>
     printScore(5, 240 + 150 * i + 5 * (i + 1), score)
@@ -103,7 +102,7 @@ async function renderTop(user, scores) {
     //   accuracy
     image.print(
       mediumFont,
-      x + 160 + 512 + 64 + 150,
+      x + 160 + 512 + 64 + 150 + 10,
       y + 5,
       `${(score.accuracy * 100).toFixed(2)}%`
     );
@@ -179,10 +178,12 @@ async function renderTop(user, scores) {
     // date
     image.print(
       mediumFont,
-      x + 1024 - 165,
-      y + 105,
+      x + 1024 - 148,
+      y + 115,
       `${moment(score.created_at).format("DD/MM/YYYY")}`
     );
+
+    image.blit(cardBorder, 0, y + 150);
   }
 }
 
