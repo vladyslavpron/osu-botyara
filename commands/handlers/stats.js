@@ -21,7 +21,7 @@ async function stats(ctx) {
   if (!user) return ctx.reply("Specify or connect account");
 
   const userNew = await getUser(osuId);
-
+  osuId = userNew.id;
   if (!userNew) return ctx.reply("User not found");
 
   // console.log(userNew);
