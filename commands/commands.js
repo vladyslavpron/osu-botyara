@@ -13,9 +13,40 @@ const bestrecent = require("./handlers/bestrecent");
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 // Middlware
+
+// delay between commands
+bot.use(async (ctx, next) => {
+  if (ctx.update.message?.entities?.[0].type === "bot_command") {
+    // get user from db
+    let user = await User.findOne({ telegramId: ctx.update.message.from.id });
+
+    if (Date.now() - Date.parse(user.lastInteractionDate) < 5000) {
+      await user.updateOne({ lastInteractionDate: new Date() });
+      return ctx.reply(
+        "You should wait at least 5 seconds before using command"
+      );
+    }
+    await user.updateOne({ lastInteractionDate: new Date() });
+  }
+
+  return next();
+});
+
+// logging middleware
+bot.use(async (ctx, next) => {
+  // console.log(ctx.update.message);
+  // console.log(ctx.update.message.entities);
+
+  if (ctx.update.message?.entities?.[0].type === "bot_command")
+    console.log(
+      `user ${ctx.message.from.id} from chat ${ctx.message.chat.id} asking ${ctx.message.text}`
+    );
+  return next();
+});
+
+// saving users into schema
 bot.use(async (ctx, next) => {
   if (!ctx.update.message?.text) return next();
-  // console.log(ctx.update.message.from.id, ctx.update.message.chat.id);
 
   let user = await User.findOne({ telegramId: ctx.update.message.from.id });
   if (!user)

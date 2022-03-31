@@ -2,9 +2,6 @@ const User = require("./../../models/userModel");
 const getUser = require("./../../utils/getUser");
 
 async function reg(ctx) {
-  console.log(
-    `user ${ctx.message.from.id} from chat ${ctx.message.chat.id} asking /reg`
-  );
   if (ctx.message.text.indexOf(" ") === -1)
     return ctx.reply("Correct usage: /reg nickname");
 

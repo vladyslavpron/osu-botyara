@@ -7,10 +7,6 @@ const getUser = require("./../../utils/getUser");
 const getUserScore = require("./../../utils/getUserScore");
 
 async function conf(ctx) {
-  console.log(
-    `user ${ctx.message.from.id} from chat ${ctx.message.chat.id} asking /conf`
-  );
-
   let mods;
   const userId = ctx.message.from.id;
   const command = ctx.update.message.text.split(" ");

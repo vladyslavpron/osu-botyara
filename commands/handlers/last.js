@@ -5,10 +5,6 @@ const getUser = require("./../../utils/getUser");
 const buildObjUserPlayMap = require("./../../utils/buildObjUserPlayMap");
 
 async function last(ctx) {
-  console.log(
-    `user ${ctx.message.from.id} from chat ${ctx.message.chat.id} asking /last`
-  );
-
   let osuId, offset, username;
   const userId = ctx.message.from.id;
 

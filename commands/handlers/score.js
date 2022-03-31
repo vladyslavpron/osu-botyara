@@ -7,9 +7,6 @@ const getUserScore = require("./../../utils/getUserScore");
 const getBeatmap = require("../../utils/getBeatmap");
 
 async function score(ctx) {
-  console.log(
-    `user ${ctx.message.from.id} from chat ${ctx.message.chat.id} asking /score`
-  );
   let osuId, username, mods;
   const userId = ctx.message.from.id;
 
