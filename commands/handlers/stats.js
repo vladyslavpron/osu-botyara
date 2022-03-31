@@ -1,20 +1,28 @@
+const { Markup } = require("telegraf");
 const User = require("./../../models/userModel");
 const getUser = require("./../../utils/getUser");
 const renderStats = require("../../renderImage/renderStats");
 
-async function stats(ctx) {
+async function stats(ctx, buttonCallback) {
   let user, osuId;
-  const userId = ctx.message.from.id;
 
-  if (ctx.message.text.indexOf(" ") === -1) {
-    user = await User.findOne({ telegramId: userId });
-    osuId = user.osuId;
+  if (!buttonCallback) {
+    const userId = ctx.message.from.id;
+
+    // if()
+
+    if (ctx.message.text.indexOf(" ") === -1) {
+      user = await User.findOne({ telegramId: userId });
+      osuId = user.osuId;
+    } else {
+      user = ctx.message.text.split(" ").slice(1).join(" ");
+      osuId = user;
+    }
+
+    if (!user) return ctx.reply("Specify or connect account");
   } else {
-    user = ctx.message.text.split(" ").slice(1).join(" ");
-    osuId = user;
+    osuId = buttonCallback.osuId;
   }
-
-  if (!user) return ctx.reply("Specify or connect account");
 
   const userNew = await getUser(osuId);
   osuId = userNew.id;
@@ -42,7 +50,15 @@ async function stats(ctx) {
 
   return ctx.replyWithPhoto(
     { source: `${__dirname}/../../stats1.png` },
-    { caption: `Profile url: https://osu.ppy.sh/users/${osuId}/osu` }
+    {
+      caption: `Profile url: https://osu.ppy.sh/users/${osuId}/osu`,
+      parse_mode: "Markdown",
+      ...Markup.inlineKeyboard([
+        Markup.button.callback("Top scores", `top ${osuId}`),
+        ,
+        Markup.button.callback("Last score", `last ${osuId}`),
+      ]),
+    }
   );
 }
 

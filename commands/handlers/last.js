@@ -4,21 +4,25 @@ const renderScore = require("../../renderImage/renderScore");
 const getUser = require("./../../utils/getUser");
 const buildObjUserPlayMap = require("./../../utils/buildObjUserPlayMap");
 
-async function last(ctx) {
+async function last(ctx, buttonCallback) {
   let osuId, offset, username;
-  const userId = ctx.message.from.id;
+  if (!buttonCallback) {
+    const userId = ctx.message.from.id;
 
-  const command = ctx.message.text.split(" ");
-  if (isFinite(command[1])) {
-    offset = parseInt(command[1]);
-    command.splice(0, 2);
-    username = command.join(" ");
-  } else username = command.slice(1, command.length).join(" ");
+    const command = ctx.message.text.split(" ");
+    if (isFinite(command[1])) {
+      offset = parseInt(command[1]);
+      command.splice(0, 2);
+      username = command.join(" ");
+    } else username = command.slice(1, command.length).join(" ");
 
-  if (!username) osuId = (await User.findOne({ telegramId: userId })).osuId;
-  else osuId = username;
+    if (!username) osuId = (await User.findOne({ telegramId: userId })).osuId;
+    else osuId = username;
 
-  if (!osuId) return ctx.reply("User not found");
+    if (!osuId) return ctx.reply("User not found");
+  } else {
+    osuId = buttonCallback.osuId;
+  }
   const userProfile = await getUser(osuId);
   osuId = userProfile?.id;
   if (!osuId) return ctx.reply("User not found");
