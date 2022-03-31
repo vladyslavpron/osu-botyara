@@ -17,7 +17,7 @@ bestrecent - show best recent play (in last 24h)
 # plans  
 dockerize whole app  
 map info after map link sent in chat   
-buttons  
+:heavy_check_mark: buttons  
 improve /conf (fonts, style etc.)  
 :heavy_check_mark: /top   
 :heavy_check_mark: /conf  
