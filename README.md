@@ -15,6 +15,7 @@ conf - show all scores of chat on beatmap
 bestrecent - show best recent play (in last 24h)  
 
 # plans  
+dockerize whole app  
 map info after map link sent in chat   
 buttons  
 improve /conf (fonts, style etc.)  
