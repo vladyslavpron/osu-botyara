@@ -40,13 +40,14 @@ async function score(ctx, buttonCallback) {
 
       if (!username) osuId = (await User.findOne({ telegramId: userId })).osuId;
       else osuId = username;
-
-      if (!osuId) return ctx.reply("User not found");
     } else {
       osuId = buttonCallback.osuId;
       mapId = buttonCallback.beatmap;
       mods = buttonCallback.mods;
     }
+
+    if (!osuId) return ctx.reply("Specify user");
+
     const userProfile = await getUser(osuId);
     osuId = userProfile?.id;
     if (!osuId) return ctx.reply("User not found");
@@ -55,9 +56,9 @@ async function score(ctx, buttonCallback) {
     const score = await getUserScore(osuId, mapId, mods);
     if (!score)
       return ctx.reply(
-        `Can't find user's ${
+        `Can't find ${userProfile.username}'s ${
           mods ? `+${mods.join("")}` : ""
-        } score on this beatmap`
+        } score on beatmap ${mapId}`
       );
     const beatmap = await getBeatmap(mapId);
     score.score.beatmapset = beatmap.beatmapset;

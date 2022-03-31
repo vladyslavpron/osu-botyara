@@ -27,7 +27,7 @@ bot.use(async (ctx, next) => {
         ctx.update.message?.from.id || ctx.update.callback_query?.from.id,
     });
     if (!user) {
-      user = await User.createOne({
+      user = await User.create({
         telegramId:
           ctx.update.message?.from.id || ctx.update.callback_query?.from.id,
       });
@@ -108,6 +108,8 @@ bot.action(/.+/, async (ctx) => {
   if (buttonCallback.command === "top") return top(ctx, buttonCallback);
   if (buttonCallback.command === "score") return score(ctx, buttonCallback);
   if (buttonCallback.command === "conf") return conf(ctx, buttonCallback);
+  if (buttonCallback.command === "bestrecent")
+    return bestrecent(ctx, buttonCallback);
 
   return ctx.reply("Something went wrong with button");
 });

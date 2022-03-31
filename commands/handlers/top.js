@@ -115,6 +115,7 @@ async function top(ctx, buttonCallback) {
         Markup.button.callback("Stats", `stats ${osuId}`),
         ,
         Markup.button.callback("Last score", `last ${osuId}`),
+        Markup.button.callback("Best recent score", `bestrecent ${osuId}`),
       ]),
     }
   );
