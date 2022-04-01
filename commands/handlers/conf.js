@@ -1,4 +1,5 @@
 const axios = require("axios");
+const path = require("path");
 const Chat = require("../../models/chatModel");
 const renderConf = require("../../renderImage/renderConf");
 const getBeatmap = require("../../utils/getBeatmap");
@@ -30,7 +31,7 @@ async function conf(ctx, buttonCallback) {
     mods = buttonCallback.mods;
     chatId = ctx.update.callback_query.message.chat.id;
   }
-  console.log(chatId);
+  // console.log(chatId);
   const users = (
     await Chat.find({
       chatId,
@@ -40,7 +41,7 @@ async function conf(ctx, buttonCallback) {
     })
   )[0].users;
 
-  console.log(users);
+  // console.log(users);
 
   const scoresRequests = users
     .filter((user) => user.osuId)
@@ -48,9 +49,9 @@ async function conf(ctx, buttonCallback) {
   const scoresResponses = (await Promise.allSettled(scoresRequests)).filter(
     (el) => el.value
   );
-  console.log(scoresRequests);
+  // console.log(scoresRequests);
 
-  console.log(scoresResponses);
+  // console.log(scoresResponses);
 
   if (!scoresResponses.length)
     return ctx.reply("No scores found for this beatmap");
@@ -70,10 +71,11 @@ async function conf(ctx, buttonCallback) {
   // console.log(beatmap);
 
   const confImg = await renderConf(beatmap, scores);
-
+  // console.log(confImg);
   // ctx.reply("/conf handled");
   return ctx.replyWithPhoto(
-    { source: `${__dirname}/../../${confImg}` },
+    { source: `${__dirname}/../../conf1.png` },
+    // { SourceBuffer: confImg },
     { caption: `Beatmap url: ${beatmap.url}` }
   );
 }

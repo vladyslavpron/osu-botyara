@@ -86,7 +86,7 @@ bot.command("conf", (ctx) => conf(ctx));
 bot.command("bestrecent", (ctx) => bestrecent(ctx));
 
 bot.action(/.+/, async (ctx) => {
-  console.log(ctx);
+  // console.log(ctx);
   // console.log(ctx.update.callback_query.message);
   // `${command} ${osuId} ${beatmap} ${mods}`
   const callback_data = ctx.update.callback_query.data.split(" ");
@@ -97,10 +97,10 @@ bot.action(/.+/, async (ctx) => {
     mods: callback_data[3] ? callback_data[3].split(",") : undefined,
   };
 
-  console.log(buttonCallback);
+  // console.log(buttonCallback);
 
   console.log(
-    `user ${ctx.update.callback_query.from.id} from chat ${ctx.update.callback_query.message.chat.id}uses button ${buttonCallback.command}`
+    `user ${ctx.update.callback_query.from.id} from chat ${ctx.update.callback_query.message.chat.id} uses button ${buttonCallback.command}`
   );
 
   if (buttonCallback.command === "stats") return stats(ctx, buttonCallback);
