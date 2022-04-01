@@ -27,7 +27,7 @@ async function conf(ctx, buttonCallback) {
           .match(/.{1,2}/g) || [];
     chatId = ctx.update.message.chat.id;
   } else {
-    mapId = buttonCallback.mapId;
+    mapId = buttonCallback.beatmap;
     mods = buttonCallback.mods;
     chatId = ctx.update.callback_query.message.chat.id;
   }
@@ -42,7 +42,11 @@ async function conf(ctx, buttonCallback) {
   )[0].users;
 
   // console.log(users);
+<<<<<<< HEAD
 
+=======
+  // console.log(mapId, mods);
+>>>>>>> 17e2c015e7f7a5c75d5ffa133a4352c320637860
   const scoresRequests = users
     .filter((user) => user.osuId)
     .map((user) => getUserScore(user.osuId, mapId, mods));
@@ -50,11 +54,14 @@ async function conf(ctx, buttonCallback) {
     (el) => el.value
   );
   // console.log(scoresRequests);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 17e2c015e7f7a5c75d5ffa133a4352c320637860
   // console.log(scoresResponses);
 
   if (!scoresResponses.length)
-    return ctx.reply("No scores found for this beatmap");
+    return ctx.reply(`No chat scores found for beatmap ${mapId}`);
   const scores = scoresResponses.map((el) => {
     // console.log(el);
     if (!el.value) return false;
