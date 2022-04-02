@@ -40,7 +40,26 @@ async function last(ctx, buttonCallback) {
 
   return ctx.replyWithPhoto(
     { source: `${__dirname}/../../${scoreImage}` },
-    { caption: `Beatmap url: ${map.url}` }
+    {
+      caption: `Beatmap url: ${map.url}`,
+      parse_mode: "Markdown",
+      ...Markup.inlineKeyboard([
+        [
+          Markup.button.callback("My score", `score ${osuId} ${mapId}`),
+          Markup.button.callback(
+            `My score +${score.score.mods.join("")}`,
+            `score ${osuId} ${mapId} ${score.score.mods}`
+          ),
+        ],
+        [
+          Markup.button.callback("Chat top", `conf ${osuId} ${mapId}`),
+          Markup.button.callback(
+            `Chat top +${score.score.mods.join("")}`,
+            `conf ${osuId} ${mapId} ${score.score.mods}`
+          ),
+        ],
+      ]),
+    }
   );
 }
 

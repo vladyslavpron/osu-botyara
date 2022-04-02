@@ -40,7 +40,10 @@ async function score(ctx, buttonCallback) {
     if (!username) osuId = (await User.findOne({ telegramId: userId })).osuId;
     else osuId = username;
   } else {
-    osuId = buttonCallback.osuId;
+    osuId = (
+      await User.findOne({ telegramId: ctx.update.callback_query.from.id })
+    ).osuId;
+    // osuId = buttonCallback.osuId;
     mapId = buttonCallback.beatmap;
     mods = buttonCallback.mods;
   }

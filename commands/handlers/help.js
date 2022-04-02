@@ -10,7 +10,8 @@ async function help(ctx) {
 /conf (+mods) - show all scores of chat on beatmap
 /bestrecent [user] - show best recent play (in last 24h)
 /You can use any command without [user] if you /reg before
-/You must reply on beatmap link with /c /score /conf to use it properly`);
+/You must reply on beatmap link with /c /score /conf to use it properly
+Contact creator: @dalv1`);
 }
 
 module.exports = help;
