@@ -10,6 +10,7 @@ const conf = require("./handlers/conf");
 const unreg = require("./handlers/unreg");
 const bestrecent = require("./handlers/bestrecent");
 const { brightness } = require("jimp");
+const help = require("./handlers/help");
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
@@ -70,10 +71,10 @@ bot.use(async (ctx, next) => {
     { upsert: true }
   );
 
-  // console.log("middleware");
   return next();
 });
 
+bot.command("help", (ctx) => help(ctx));
 bot.command("reg", (ctx) => reg(ctx));
 bot.command("unreg", (ctx) => unreg(ctx));
 bot.command("stats", (ctx) => stats(ctx));
