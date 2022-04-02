@@ -9,10 +9,12 @@ const moment = require("moment");
 async function renderConf(beatmap, scores) {
   const background = await processBg(beatmap);
   const banner = await processBanner();
+  const scoresImg = await processScores(scores);
+  // 250px bg 5px margin 80px banner 5px margin 30px each score
   const image = await sharp({
     create: {
       width: 1024,
-      height: 800,
+      height: 250 + 5 + 80 + 5 + 30 * scores.length + 20,
       channels: 3,
       background: { r: 0, g: 0, b: 0 },
     },
@@ -24,6 +26,7 @@ async function renderConf(beatmap, scores) {
         top: 0,
       },
       { input: banner, top: 255, left: 0 },
+      { input: scoresImg, top: 340, left: 0 },
     ])
     .toFormat("png")
     .toBuffer();
@@ -31,43 +34,92 @@ async function renderConf(beatmap, scores) {
   fs.writeFileSync("conf1.png", image);
   return "conf1.png";
 
-  async function processBanner() {
-    const bannerTextBuffer = Buffer.from(
-      `<svg height="40" width="1024"> 
-    <style>
-    @font-face{
-      font-family: "Roboto";
-      src: url("/fonts/conf/Roboto.ttf") format("truetype");
-    }</style>
-    <text textLength="1024" x="50" y="28" font-size="24" fill="white" font-family="Roboto" font-weight="700"  >Chat best scores:</text> 
-    </svg>`
-    );
+  async function processScores(scores) {
+    const scoresTextStyles =
+      'textLength="100" font-size="18"  font-weight="500"  text-anchor="middle" font-family="Roboto"';
+    /* <text x="75" y="${  22 * (i + 1) }" ${scoresTextStyles}>#${score.position.toLocaleString("en-US" )}</text>  */
 
+    let scoresStr = `<svg height="${
+      30 * scores.length
+    }" width="1024"><style>@font-face{font-family: "Roboto";src: url("/fonts/conf/Roboto.ttf") format("truetype");}</style>`;
+
+    scores.forEach((score, i) => {
+      scoresStr += `
+        <text x="50" y="${22 * (i + 1)}" ${scoresTextStyles} fill="white">#${
+        i + 1
+      }/#${score.position.toLocaleString("en-US")}</text> 
+        <text x="190" y="${22 * (i + 1)}" ${scoresTextStyles} fill="white">${
+        score.user.username
+      }</text> 
+        <text x="310" y="${
+          22 * (i + 1)
+        }" ${scoresTextStyles} fill="white">${score.score.toLocaleString(
+        "en-US"
+      )}</text> 
+        <text x="405" y="${
+          22 * (i + 1)
+        }" ${scoresTextStyles} fill="white">${score.pp.toFixed()}pp</text> 
+        <text x="490" y="${22 * (i + 1)}" ${scoresTextStyles} fill="white">${
+        score.max_combo
+      }x/${beatmap.max_combo}x</text> 
+        <text x="610" y="${
+          22 * (i + 1)
+        }" ${scoresTextStyles} fill="white">${score.mods.join("")}</text> 
+        <text x="715" y="${22 * (i + 1)}" ${scoresTextStyles} fill="white">${(
+        score.accuracy * 100
+      ).toFixed(2)}%</text> 
+        <text x="794" y="${22 * (i + 1)}" ${scoresTextStyles} fill="#4169E1">${
+        score.statistics.count_300
+      }</text> 
+        <text x="840" y="${22 * (i + 1)}" ${scoresTextStyles} fill="#00b300">${
+        score.statistics.count_100
+      }</text> 
+        <text x="877" y="${22 * (i + 1)}" ${scoresTextStyles} fill="#cc006d">${
+        score.statistics.count_50
+      }</text> 
+        <text x="908" y="${22 * (i + 1)}" ${scoresTextStyles} fill="#DC143C">${
+        score.statistics.count_miss
+      }</text> 
+        <text x="972" y="${
+          22 * (i + 1)
+        }" ${scoresTextStyles} fill="white">${moment(score.created_at).format(
+        "DD/MM/YYYY"
+      )}</text> `;
+    });
+    scoresStr += `</svg>`;
+    // console.log(scoresStr);
+    const scoresTextBuffer = Buffer.from(scoresStr);
+
+    return scoresTextBuffer;
+  }
+
+  async function processBanner() {
     const coloumnsTextStyles =
-      'textLength="1024" font-size="24" fill="#8C92AC"  font-weight="500"';
+      'textLength="1024" font-size="26"   font-weight="500" fill="black" ';
+    // <text x="75" y="24" ${coloumnsTextStyles}>Global</text>
+
     const coloumnsTextBuffer = Buffer.from(
       `<svg height="40" width="1024"> 
-    <text x="5" y="24" ${coloumnsTextStyles}>Rank</text> 
-    <text x="25" y="24" ${coloumnsTextStyles}>Global</text> 
-    <text x="55" y="24" ${coloumnsTextStyles}>Player</text> 
-    <text x="55" y="24" ${coloumnsTextStyles}>Score</text> 
-    <text x="55" y="24" ${coloumnsTextStyles}>PP</text> 
-    <text x="55" y="24" ${coloumnsTextStyles}>Combo</text> 
-    <text x="55" y="24" ${coloumnsTextStyles}>Mods</text> 
-    <text x="55" y="24" ${coloumnsTextStyles}>Accuracy</text> 
-    <text x="55" y="24" ${coloumnsTextStyles}>300</text> 
-    <text x="55" y="24" ${coloumnsTextStyles}>100</text> 
-    <text x="55" y="24" ${coloumnsTextStyles}>50</text> 
-    <text x="55" y="24" ${coloumnsTextStyles}>x</text> 
-    <text x="55" y="24" ${coloumnsTextStyles}>Date</text> 
+    <text x="2" y="24" ${coloumnsTextStyles}>Rank/Global</text> 
+    <text x="155" y="24" ${coloumnsTextStyles}>Player</text> 
+    <text x="280" y="24" ${coloumnsTextStyles}>Score</text> 
+    <text x="385" y="24" ${coloumnsTextStyles}>PP</text> 
+    <text x="450" y="24" ${coloumnsTextStyles}>Combo</text> 
+    <text x="580" y="24" ${coloumnsTextStyles}>Mods</text> 
+    <text x="660" y="24" ${coloumnsTextStyles}>Accuracy</text> 
+    <text x="770" y="24" ${coloumnsTextStyles}>300</text> 
+    <text x="820" y="24" ${coloumnsTextStyles}>100</text> 
+    <text x="865" y="24" ${coloumnsTextStyles}>50</text> 
+    <text x="900" y="24" ${coloumnsTextStyles}>x</text> 
+    <text x="945" y="24" ${coloumnsTextStyles}>Date</text> 
     </svg>`
     );
 
     const banner = await sharp(`${__dirname}/templateImages/topBanner.png`)
       .resize(1024, 80)
       .composite([
-        { input: bannerTextBuffer, top: 0, left: 0 },
-        { input: coloumnsTextBuffer, top: 45, left: 0 },
+        // { input: bannerTextBuffer, top: 0, left: 0 },
+        { input: coloumnsTextBuffer, top: 20, left: 0 },
       ])
       .toBuffer();
 
@@ -101,10 +153,10 @@ async function renderConf(beatmap, scores) {
 
     // map name
     const mapNameBuffer = Buffer.from(` 
-      <svg height="80" width="974" viewBox="0 0 1024 100"> 
+      <svg height="100" width="1024" > 
       <style>@font-face{font-family: "Roboto";src: url("/fonts/conf/Roboto.ttf") format("truetype");}</style>
-      <text textLength="974" x="0" y="32" fill="white" font-family="Roboto" font-weight="700" font-size="32px" >${beatmap.beatmapset.artist} - ${beatmap.beatmapset.title}</text>
-     <text textLength="974" x="487" y="64" fill="white" font-family="Roboto" font-weight="700" font-size="32px" >
+      <text textLength="1014" x="5" y="32" fill="white" text-anchor="start" font-family="Roboto" font-weight="700" font-size="32px" >${beatmap.beatmapset.artist} - ${beatmap.beatmapset.title}</text>
+     <text textLength="1014" x="1000" y="64" fill="white" font-family="Roboto" font-weight="700" font-size="32px" text-anchor="end" >
      By (${beatmap.beatmapset.creator}) [${beatmap.version}]</text>
      </svg>`);
 
@@ -132,10 +184,10 @@ async function renderConf(beatmap, scores) {
     <text x="500" y="20" ${mapStatsStyles} >SR: ${
         beatmap.difficulty_rating
       }</text> 
-    <text x="600" y="20" ${mapStatsStyles} >BPM: ${beatmap.bpm.toFixed(
+    <text x="610" y="20" ${mapStatsStyles} >BPM: ${beatmap.bpm.toFixed(
         1
       )}</text> 
-    <text x="750" y="20" ${mapStatsStyles} >Length: ${duration}</text> 
+    <text x="760" y="20" ${mapStatsStyles} >Length: ${duration}</text> 
     </svg>`
     );
 

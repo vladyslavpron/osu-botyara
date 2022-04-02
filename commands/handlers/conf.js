@@ -67,8 +67,8 @@ async function conf(ctx, buttonCallback) {
 
   const beatmap = await getBeatmap(scores[0].beatmap.id);
   // console.log(beatmap);
-
   const confImg = await renderConf(beatmap, scores);
+
   // console.log(confImg);
   // ctx.reply("/conf handled");
   return ctx.replyWithPhoto(
