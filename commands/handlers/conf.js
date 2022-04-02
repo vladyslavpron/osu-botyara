@@ -42,11 +42,6 @@ async function conf(ctx, buttonCallback) {
   )[0].users;
 
   // console.log(users);
-<<<<<<< HEAD
-
-=======
-  // console.log(mapId, mods);
->>>>>>> 17e2c015e7f7a5c75d5ffa133a4352c320637860
   const scoresRequests = users
     .filter((user) => user.osuId)
     .map((user) => getUserScore(user.osuId, mapId, mods));
@@ -54,10 +49,6 @@ async function conf(ctx, buttonCallback) {
     (el) => el.value
   );
   // console.log(scoresRequests);
-<<<<<<< HEAD
-
-=======
->>>>>>> 17e2c015e7f7a5c75d5ffa133a4352c320637860
   // console.log(scoresResponses);
 
   if (!scoresResponses.length)
