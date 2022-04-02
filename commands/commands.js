@@ -87,7 +87,7 @@ bot.command("conf", (ctx) => conf(ctx));
 bot.command("bestrecent", (ctx) => bestrecent(ctx));
 
 bot.action(/.+/, async (ctx) => {
-  // console.log(ctx);
+  console.log(ctx);
   // console.log(ctx.update.callback_query.message);
   // `${command} ${osuId} ${beatmap} ${mods}`
   const callback_data = ctx.update.callback_query.data.split(" ");
