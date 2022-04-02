@@ -42,7 +42,7 @@ async function bestrecent(ctx, buttonCallback) {
     prev.pp > current.pp ? prev : current
   );
 
-  console.log(bestRecentScore);
+  // console.log(bestRecentScore);
 
   const { user, play, map } = buildObjUserPlayMap(bestRecentScore, userProfile);
 
@@ -50,7 +50,7 @@ async function bestrecent(ctx, buttonCallback) {
 
   const scoreImage = await renderScore(user, map, play);
   if (!bestRecentScore.mods.length) bestRecentScore.mods.push("NM");
-  console.log(bestRecentScore.mods);
+  // console.log(bestRecentScore.mods);
   //   return ctx.reply("/bestrecent not implemented yet");
   //   console.log(Date.now() - start);
   return ctx.replyWithPhoto(

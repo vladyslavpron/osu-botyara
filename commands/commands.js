@@ -115,6 +115,11 @@ bot.action(/.+/, async (ctx) => {
   return ctx.reply("Something went wrong with button");
 });
 
+bot.catch((err, ctx) => {
+  console.log(err);
+  ctx.reply("Something went wrong");
+});
+
 // bot.on("text", (ctx) => {
 //   ctx.reply(`Helloooo`);
 // });
