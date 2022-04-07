@@ -1,4 +1,6 @@
 const axios = require("axios");
+const { Markup } = require("telegraf");
+
 const User = require("./../../models/userModel");
 const renderScore = require("../../renderImage/renderScore");
 const getUser = require("./../../utils/getUser");
@@ -35,7 +37,7 @@ async function last(ctx, buttonCallback) {
   const { user, play, map } = buildObjUserPlayMap(lastScore[0], userProfile);
 
   // console.log(user, map, play);
-
+  const mapId = lastScore[0].beatmap.id;
   const scoreImage = await renderScore(user, map, play);
 
   return ctx.replyWithPhoto(
@@ -47,15 +49,15 @@ async function last(ctx, buttonCallback) {
         [
           Markup.button.callback("My score", `score ${osuId} ${mapId}`),
           Markup.button.callback(
-            `My score +${score.score.mods.join("")}`,
-            `score ${osuId} ${mapId} ${score.score.mods}`
+            `My score +${lastScore[0].mods.join("")}`,
+            `score ${osuId} ${mapId} ${lastScore[0].mods}`
           ),
         ],
         [
           Markup.button.callback("Chat top", `conf ${osuId} ${mapId}`),
           Markup.button.callback(
-            `Chat top +${score.score.mods.join("")}`,
-            `conf ${osuId} ${mapId} ${score.score.mods}`
+            `Chat top +${lastScore[0].mods.join("")}`,
+            `conf ${osuId} ${mapId} ${lastScore[0].mods}`
           ),
         ],
       ]),
