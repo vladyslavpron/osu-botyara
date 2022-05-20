@@ -17,8 +17,8 @@
 /You must reply on beatmap link with /c /score /conf to use it properly 
 
 # plans  
-dockerize whole app  
-map info after map link sent in chat   
+map stats after map link sent in chat   
+rewrite app with Nest
 :heavy_check_mark: buttons  
 :heavy_check_mark: improve /conf (fonts, style etc.)  
 :heavy_check_mark: /top   
