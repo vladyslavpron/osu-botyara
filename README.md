@@ -1,6 +1,6 @@
 # osu-botyara
-
-# osu! bot for telegram @osu_botyara_bot
+telegram @osu_botyara_bot
+Bot integrates with osu!api to provide user details and success in fancy pictures to telegram conversations.
 
 # commands 
 /reg [user] - connect account  
